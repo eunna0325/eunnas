@@ -1,0 +1,1620 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8" />
+	<title></title>
+	<meta name="description" content="ImgSrc Collaboration Solution PayForm" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maxium-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+	<style>
+
+		 div {font-size:13px;font-family:'Spoqa Han Sans', sans-serif;height:auto;}
+		 th, td{vertical-align:middle !important; font-size:13px;font-family:'Spoqa Han Sans', Sans-serif;height:auto;color:#000000 ;margin:0; outline:0; padding:0;vertical-align:baseline;border:0;font-style:inherit; }
+
+		.msp-10 { margin:0; padding:0; height:10px; clear:both; }
+		.msp-20 { margin:0; padding:0; height:20px; clear:both; }
+		.msp-30 { margin:0; padding:0; height:30px; clear:both; }
+		.msp-74 { margin:0; padding:0; height:74px; clear:both; }
+		.msp-64 { margin:0; padding:0; height:64px; clear:both; }
+		.msp-100 { margin:0; padding:0; height:100px; clear:both; }
+
+	</style>
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/font-icons/entypo/css/entypo.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/font-icons/font-awesome/css/font-awesome.min.css">
+
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/bootstrap.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/neon-core.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/neon-theme.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/neon-forms.css">
+	<!--<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/custom.css">-->
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/css/imgsrc.css">
+	<script src="http://adpumkin.co.kr/_config/include/js/util.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery-1.11.0.min.js"></script>
+
+	<script src="http://adpumkin.co.kr/_config/include/assets/imgsrc/js/jquery.ajax.submit.js" type="text/javascript"></script>
+
+	<script>
+		$.noConflict();
+		var $ = jQuery;
+	</script>
+
+<body  class="page-body isPopup-false">
+	<!-- 상단 메뉴 및 사용자 정보 -->
+
+	<div class="page-container horizontal-menu">
+
+		
+	<header class="navbar navbar-fixed-top"><!-- set fixed position by adding class "navbar-fixed-top" -->
+
+		<div class="navbar-inner">
+
+			<!-- logo -->
+			<div class="navbar-brand">
+				<a href="/oladmin/adminpage.php">
+				<!--
+					<img src="http://adpumkin.co.kr/_config/images/logo.png" width="88" alt="" />
+					-->
+					<P><font size="4" color="#ffffff">
+						ADPUMKIN
+					</font></P>
+				</a>
+			</div>
+
+			<!-- main menu    -->
+			<ul class="navbar-nav">
+				<li class="">
+					<a href="/oladmin/shop/shop_list.php">
+						<i class="entypo-user"></i>
+						<span class="title">상점정보</span>
+					</a>
+					<ul>
+						<li>
+							<a href="/oladmin/shop/shop_list.php">
+								<span class="title">상점목록</span>
+							</a>
+						</li>
+
+												<li>
+							<a href="/oladmin/shop/shop_list_all.php">
+								<span class="title">전체 상점목록</span>
+							</a>
+						</li>
+						
+						<li>
+							<a href="/oladmin/shop/recommender_list.php">
+								<span class="title">추천인 목록</span>
+							</a>
+						</li>
+
+					</ul>
+				</li>
+
+				<li class=" ">
+					<a href="/oladmin/order/order_list.php">
+						<i class="entypo-basket"></i>
+						<span class="title">판매관리</span>
+					</a>
+					<ul>
+
+
+
+						
+						<li>
+							<a href="/oladmin/order/order_list.php?s_od_status[]=1">
+								<span class="title">신규 판매목록</span>
+								
+															</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/order/order_list.php">
+								<span class="title">판매목록</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/order/order_detail_list.php">
+								<span class="title">상세 판매목록</span>
+							</a>
+						</li>
+
+
+						<li>
+							<a href="/shop/ol_list.php?olid=elinee" target='_blank'>
+								<span class="title">쇼핑몰 바로가기</span>
+							</a>
+						</li>
+
+
+
+
+					</ul>
+				</li>
+
+				<li class="">
+					<a href="/oladmin/item/item_list.php">
+						<i class="entypo-layout"></i>
+						<span class="title">상품관리</span>
+					</a>
+					<ul>
+						<li>
+							<a href="/oladmin/item/item_list_all.php">
+								<span class="title">전체 상품 목록</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/item/item_list.php">
+								<span class="title">판매 상품 목록</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/item/set_item_cate.php">
+								<span class="title">쇼핑몰 판매 상품 분류 설정</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/item/shop_item_list.php">
+								<span class="title">쇼핑몰 상품 분류 수정</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+				<li class="">
+					<a href="/oladmin/job">
+						<i class="entypo-camera"></i>
+						<span class="title">작업관리</span>
+					</a>
+					<ul>
+
+						<li>
+							<a href="/oladmin/job/list.php?table=job_d75b4d12f107442eb2a3246a49e54ba3">
+								<span class="title">인스타그램 리뷰</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/job/list.php?table=job_95805e7359a1624860af71be8c44fb34">
+								<span class="title">블로그 리뷰</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/job/list.php?table=job_59c60e5d6e532baa30fcd92fbd4de4af">
+								<span class="title">블로그 기자단</span>
+							</a>
+						</li>
+
+					<!----
+						<li>
+							<a href="/oladmin/job/list.php?table=job_a4ded59ddabcf2953aaa8bf3fc3c6d5d">
+								<span class="title">카카오헤어샵 일감</span>
+							</a>
+						</li>
+						------>
+						<li>
+							<a href="/oladmin/job/list.php?table=job_137d28cfd3bf8b95c60146b9b0f77ff4">
+								<span class="title">기타 일감</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/job/list.php?table=job_87d87250cb69f1fee2a04b652d1f85c3">
+								<span class="title">기타 일감 (무제한)</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/job/myjob.php">
+								<span class="title">진행중 작업</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/job/myjob.php?mode=accept">
+								<span class="title">완료 작업</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+
+
+
+
+			<li class="">
+					<a href="/oladmin/job">
+						<i class="entypo-network"></i>
+						<span class="title">광고등록</span>
+					</a>
+					<ul>
+
+					
+						<li>
+							<a href="/oladmin/job/list.php?table=job_18a7250fdbcc60c4c0ba345d8c5a1a3e">
+								<span class="title">위치기반 마케팅</span>
+							</a>
+						</li>
+
+
+						<li>
+							<a href="/oladmin/job/list.php?table=job_6db3c130daf5078ae4947697e4107c6b">
+								<span class="title">인스타그램 인기게시물</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/job/list.php?table=job_c1ae16ccea6333588f6c77c8c8f77cf3">
+								<span class="title">인스타 계정관리</span>
+							</a>
+						</li>
+					
+						<li>
+							<a href="/oladmin/job/list.php?table=job_e009b827504a659a89f9b3612fe51ec5">
+								<span class="title">뷰티페이 홍보</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/job/list.php?table=job_25e769953f317e5edbf4d72841b434c7">
+								<span class="title">광고/일감 등록</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+
+
+					<li class="">
+						<a href="/oladmin/snsmall">
+							<i class="entypo-network"></i>
+							<span class="title">SNS MARKET</span>
+						</a>
+						<ul>
+
+													<li>
+								<a href="/oladmin/snsmall">
+									<span class="title">SNS MARKET</span>
+								</a>
+							</li>
+							<li>
+								<a href="/oladmin/snsmall/orders.php">
+									<span class="title">SNS 처리내역</span>
+								</a>
+							</li>
+							<li>
+								<a href="/oladmin/snsmall/point.php">
+									<span class="title">SNS 포인트</span>
+								</a>
+							</li>
+
+												</ul>
+					</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<li class="">
+					<a href="/oladmin/calc/calc_list.php">
+						<i class="entypo-newspaper"></i>
+						<span class="title">쇼핑몰 정산</span>
+					</a>
+					<ul>
+
+					<li>
+						<a href="/oladmin/calc/calc_list.php">
+							<span class="title">쇼핑몰 정산예정</span>
+						</a>
+					</li>				<li>
+						<a href="/oladmin/calc/calc_list.php">
+							<span class="title">쇼핑몰 정산목록</span>
+						</a>
+					</li>
+					<li>
+						<a href="/oladmin/calc/offpg_calc_list.php">
+							<span class="title">뷰티페이 정산목록</span>
+						</a>
+					</li>
+
+					</ul>
+				</li>
+
+				<li class="">
+					<a href="/oladmin/appoint/point_history.php">
+						<i class="entypo-briefcase"></i>
+						<span class="title">적립금 내역</span>
+					</a>
+					<ul>
+						<li>
+							<a href="/oladmin/appoint/point_history.php">
+								<span class="title">적립/사용내역</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+
+				<li class="">
+					<a href="/oladmin/appoint/accountcash.php">
+						<i class="entypo-publish"></i>
+						<span class="title">현금인출</span>
+					</a>
+					<ul>
+						<li>
+							<a  onClick="SetBank();">
+								<span class="title">출금 계좌등록</span>
+							</a>
+						</li>
+						<li>
+							<a href="/oladmin/appoint/accountcash.php">
+								<span class="title">계좌이체 요청</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li class="">
+					<a href="/oladmin/job/list.php?table=job_ebd1c0be519480d47f2dccce22520d9e">
+						<i class="entypo-camera"></i>
+						<span class="title">클린애드펌킨</span>
+					</a>
+					<ul>
+						<li>
+							<a  href="/oladmin/job/list.php?table=job_ebd1c0be519480d47f2dccce22520d9e" >
+								<span class="title">클린애드펌킨</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+					<li class="">
+					<a href="/oladmin/setup/default_setup.php">
+						<i class="entypo-cog"></i>
+						<span class="title">설정</span>
+					</a>
+					<ul>
+						<li>
+							<a href="/oladmin/setup/default_setup.php">
+								<span class="title">기본설정</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/oladmin/setup/category.php">
+								<span class="title">쇼핑몰 카테고리</span>
+							</a>
+						</li>
+
+
+
+						<!--
+						<li>
+							<a href="/oladmin/setup/sns_setup.php">
+								<span class="title">SNS 설정</span>
+							</a>
+						</li>
+						--->
+
+						<li>
+							<a href="/oladmin/banner/banner_form.php">
+								<span class="title">배너관리</span>
+							</a>
+						</li>
+
+						<li>
+							<a  href="/oladmin/popup/popup_list.php">
+								<span class="title">팝업관리</span>
+							</a>
+						</li>
+
+						<li>
+							<a  href="/oladmin/setup/sns_list.php">
+								<span class="title">SNS 계정관리</span>
+							</a>
+						</li>
+
+
+
+
+
+					</ul>
+				</li>
+
+
+				<!---
+				</li>
+					<li class="">
+					<a href="/board/list.php?table=board_bebf4ccce0b8fbdd1cd90cb1299030f6">
+						<i class="entypo-logout"></i>
+						<span class="title">탈퇴요청</span>
+					</a>
+				</li>
+				---->
+
+
+			</ul>
+
+
+			<!-- notifications and other links -->
+			<ul class="nav navbar-right pull-right">
+				<li class="dropdown">
+
+					<div class="horizontal-mobile-menu visible-xs">
+						<a href="#" class="with-animation"><!-- add class "with-animation" to support animation -->
+							<i class="entypo-menu"></i>
+						</a>
+					</div>
+
+				<li>
+
+				<li class="sep"> </li>
+
+				<li>
+					<a href="/oladmin/logout.php">
+						로그아웃 <i class="entypo-logout right"></i>
+					</a>
+				</li>
+
+				<!-- mobile only -->
+
+			</ul>
+
+		</div>
+
+	</header>
+
+<script>
+	function SetBank()	{
+		var w=window.open("/oladmin/setup/bank_form.php",'',"resizable=yes, width=850, height=750, scrollbars=yes,resizable=yes");
+		w.focus();
+	}
+</script>		<div class="imgsrc-main-content main-content">		
+
+
+
+
+<script src="http://adpumkin.co.kr/_config/include/js/ZeroClipboard.js"></script>
+
+
+<!---------------------------------- 상단 타이틀 ----------------------------->
+<div class="panel panel-default imgsrc-title-panel">
+	<div class="panel-heading">
+		<div class="panel-title">
+
+			<i class="entypo-layout" onClick="PayOpen('regnum');"></i>
+			픽미  [ 옵티머스 A ]
+			<button class="btn btn-red" type="button" onClick="PayOpen('pay');">정회원신청</button>
+			<!--
+			&nbsp;&nbsp;&nbsp;&nbsp;<u><strong><font size="" color="red"><a href="http://me2.do/xufrwwam" target="_blank">아이폰 모바일 결제안될때 결제링크</a></font></strong></u>
+			-->
+		</div>
+		
+	</div>
+</div>
+<!---------------------------------- 상단 타이틀 END----------------------------->
+
+<div class="imgsrc-page-content page-content">
+
+
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="well">
+					<h4><button class="btn btn-success" id="CopyJoinUrl" type="button" data-url="http://me2.do/5DPT6jtL">추천인 링크 복사</button> <input type="text" class='form-control' id="recurl" value="http://me2.do/5DPT6jtL" style="width:150px;display:inline;"> </h4>
+					<form name='test'>
+
+					</form>
+					<!--
+
+					<a href="/download/LikeBee-release.apk"><img src="/images/likebee.png" width='50'><strong>라이크비 다운로드</strong></a>
+					--->
+					<a href="/download/LikeBee-release.zip"><img src="likebee.png" width='50'><strong>라이크비.zip 다운로드</strong></a>
+
+
+					<!--
+					<br>
+					<a href="/oladmin/job/view.php?table=job_6db3c130daf5078ae4947697e4107c6b&pg=1&listOrderBy=&listOrderDir=&listAccNo=&listFolderId=&number=1"><strong>* 인스타그램 인기게시물 작업메뉴얼 공지사항 확인하기!!!</strong></a>
+					-->
+				</div>
+			</div>
+		</div>
+		<br />
+
+		<div class="row">
+
+						
+			<div class="col-sm-3 col-xs-12">
+				<div class="tile-stats tile-red">
+					<div class="icon"><i class="entypo-users"></i></div>
+					<div class="num" data-start="0" data-end="810,000 원" data-postfix=" 원" data-duration="1500" data-delay="600">810,000 원</div>
+					<h3>누적 리셀러 수익</h3>
+					<p>누적 리셀러 총금액</p>
+				</div>
+
+			</div>
+
+			<div class="col-sm-3 col-xs-12">
+
+				<div class="tile-stats tile-green">
+					<div class="icon"><i class="entypo-chart-bar"></i></div>
+					<div class="num" data-start="0" data-end="6,600 원 " data-postfix="원" data-duration="1500" data-delay="600">6,600 원</div>
+					<h3>누적 광고/글감 수익</h3>
+					<p>누적 광고/글감 총금액</p>
+				</div>
+
+			</div>
+
+			<div class="col-sm-3 col-xs-12">
+				<div class="tile-stats tile-aqua">
+					<div class="icon"><i class="entypo-suitcase"></i></div>
+					<div class="num" data-start="0" data-end="0 원" data-prefix="원" data-postfix="원" data-duration="1500" data-delay="0">0 원</div>
+					<h3>전체 상품판매 수익</h3>
+					<p>전체 상품판매 총금액 </p>
+				</div>
+			</div>
+
+			<div class="col-sm-3 col-xs-12">
+
+				<div class="tile-stats tile-blue">
+					<div class="icon"><i class="entypo-gauge"></i></div>
+					<div class="num" data-start="0" data-end="320,000 원" data-prefix="" data-postfix="원" data-duration="1500" data-delay="600">320,000 원</div>
+
+					<h3>전체 인기게시물 수익</h3>
+					<p>전체 인기게시물 총금액</p>
+				</div>
+
+			</div>
+		</div>
+		<br />
+
+
+
+
+		<div class="row">
+
+<!--- 쇼핑몰 주문현황 pc화면사이즈 --->
+
+
+		
+
+			<div class="col-sm-12">
+			<h4 id="less" class="page-header">신규 추천 가입현황				<a href="/oladmin/shop/recommender_list.php" class="btn btn-success" style="float:right;margin-top:-10px;" role="button">more</a>
+			</h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th class="text-center">아이디</th>
+			<th class="text-center hidden-xs">닉네임</th>
+			<th class="text-center">상태</th>
+			<th class="text-center">등급</th>
+			<th class="text-center">날짜</th>
+
+			</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+			</table>
+			</div>
+
+			
+
+
+<!--- 쇼핑몰 주문현황 pc화면사이즈 --->
+			<div class="col-sm-12 hidden-xs hidden-sm">
+			<h4 id="less" class="page-header">쇼핑몰 주문현황 <a href="./order/order_list.php" class="btn btn-success" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th></th>
+
+
+			<th class="text-center">전체주문</th>
+			<th class="text-center">매출집계</th>
+			<th class="text-center">입금대기</th>
+			<th class="text-center">결제완료</th>
+			<th class="text-center">주문확인</th>
+			<th class="text-center">상품발송</th>
+			<th class="text-center">배송완료</th>
+			<th class="text-center">취소완료</th>
+			<th class="text-center">교환요청</th>
+			<th class="text-center">교환완료</th>
+			<th class="text-center">반품요청</th>
+			<th class="text-center">반품완료</th>
+
+
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+			<td>오늘</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>이번달</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>2019년</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>전체</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			</tbody>
+			</table>
+ </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+.list-item {padding:10px;}
+.list-box { position:relative; border:1px solid #ddd; background:#fff; text-align:center;padding:15px;}
+.list-box > .img-item{ padding-top:15px; }
+.list-content {padding-bottom:10px}
+</style>
+
+	<!--- 쇼핑몰 주문현황 pc화면사이즈 --->
+	<div class="col-sm-12">
+		<h4 class="page-header" style="color:red;font-weight:bold;">신규상품 <a href="/oladmin/item/item_list_all.php?&s_order=datetime&s_desc=DESC" class="btn btn-danger" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+
+		<div class="row">
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631382" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565631382&imgname=20190813023821_481951.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631382" target='_blank'>피.에리티</a>
+							<div class="font-18 en prb">
+								<b>27200원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631531" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565631531&imgname=20190813024014_983087.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631531" target='_blank'>피.에리원피스</a>
+							<div class="font-18 en prb">
+								<b>28800원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631637" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565631637&imgname=20190813024227_961011.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631637" target='_blank'>피.체크원피스</a>
+							<div class="font-18 en prb">
+								<b>38400원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631786" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565631786&imgname=20190813024409_130231.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631786" target='_blank'>피.플라워원피스</a>
+							<div class="font-18 en prb">
+								<b>40000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631890" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565631890&imgname=20190813024713_110229.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565631890" target='_blank'>피.리본원피스</a>
+							<div class="font-18 en prb">
+								<b>30400원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565632089" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565632089&imgname=20190813024926_973025.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565632089" target='_blank'>피.끈달이원피스</a>
+							<div class="font-18 en prb">
+								<b>30400원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+		</div>
+
+	</div>
+
+
+
+	<!--- 쇼핑몰 주문현황 pc화면사이즈 --->
+	<div class="col-sm-12">
+		<h4 class="page-header" style="color:blue;font-weight:bold;">인기상품 <a href="/oladmin/item/item_list_all.php?s_popular=popular&s_order=datetime&s_desc=DESC" class="btn btn-blue" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+
+		<div class="row">
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565319789" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565319789&imgname=20190809120357_792631.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565319789" target='_blank'>3세대 차량용 핸드폰 거치대</a>
+							<div class="font-18 en prb">
+								<b>6900원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565163157" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565163157&imgname=20190807164002_506598.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565163157" target='_blank'>디베아 Q10 사이클론 무선...</a>
+							<div class="font-18 en prb">
+								<b>169000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565248766" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1565248766&imgname=20190808162559_35139.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1565248766" target='_blank'>전라도 맛김치</a>
+							<div class="font-18 en prb">
+								<b>10900원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1562732439" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1562732439&imgname=20190710132238_344609.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1562732439" target='_blank'>닥터스토리 넥 밸런스</a>
+							<div class="font-18 en prb">
+								<b>17500원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1563854840" target='_blank'>
+							<img src="http://mall.adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1563854840&imgname=20190723132102_194676.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1563854840" target='_blank'>언밸런스 이어링</a>
+							<div class="font-18 en prb">
+								<b>11500원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1563785340" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1563785340&imgname=20190722175416_961436.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1563785340" target='_blank'><한정특가>경량패딩자켓</a>
+							<div class="font-18 en prb">
+								<b>13600원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+		</div>
+
+	</div>
+
+
+
+
+	<!--- 쇼핑몰 주문현황 pc화면사이즈 --->
+	<div class="col-sm-12">
+		<h4 class="page-header" style="color:#007d3d;font-weight:bold;">수익율 높은상품 <a href="/oladmin/item/item_list_all.php?s_order=charge_rate&s_desc=DESC" class="btn btn-green" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+
+		<div class="row">
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548902378" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548902378&imgname=20190131114056_910392.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548902378" target='_blank'>KORIKORI Double Moisture...</a>
+							<div class="font-18 en prb">
+								<b>15000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548899980" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548899980&imgname=20190131110158_596.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548899980" target='_blank'>브이라인 비톡스 리프팅마...</a>
+							<div class="font-18 en prb">
+								<b>21000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900527" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548900527&imgname=20190131111149_175474.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900527" target='_blank'>화이트플랜 치아미백기 /...</a>
+							<div class="font-18 en prb">
+								<b>49000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900403" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548900403&imgname=20190131110829_817943.jpg&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900403" target='_blank'>시크릿 보르피린 모어뷰티</a>
+							<div class="font-18 en prb">
+								<b>25000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900287" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548900287&imgname=20190131110544_409507.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900287" target='_blank'>브이라인 마스크+비톡스 ...</a>
+							<div class="font-18 en prb">
+								<b>38000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-xs-6 col-md-3 col-lg-2 list-item" >
+				<div class="list-box">
+					<div class="img-item">
+						<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900135" target='_blank'>
+							<img src="http://adpumkin.co.kr/_public/getimage.php?opid=adpumkin&no=1548900135&imgname=20190131110427_618512.png&amp;width=150" alt="" onerror="this.src='/_config/images/noimage.jpg'">
+						</a>
+						<div class="list-content">
+							<a href="/shop/order_form.php?opid=adpumkin&amp;it_id=1548900135" target='_blank'>비톡스 리프팅 크림 화이...</a>
+							<div class="font-18 en prb">
+								<b>23000원 </b>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+		</div>
+
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!--- 쇼핑몰 주문현황 mobile화면사이즈 --->
+<div class="col-sm-12 hidden-md hidden-lg">
+			<h4 id="less" class="page-header">쇼핑몰 주문현황 <a href="./order/order_list.php" class="btn btn-success" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th></th>
+			<th>전체주문</th>
+			<th>매출집계</th>
+			<th>입금대기</th>
+			<th>신규주문</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+			<td>오늘현재</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>이번달</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>2019년</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+
+			</tr>
+			<tr>
+			<td>전체</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+
+			</tr>
+			</tbody>
+			</table>
+</div>
+ <!--- 쇼핑몰 매출통계 화면 --->
+
+
+
+<div class="col-sm-12">
+			<h4 id="less" class="page-header">쇼핑몰 업체별 매출 및 정산예정금액 <a href="./calc/calc_list.php" class="btn btn-success" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th class="text-center">업체명</th>
+			<th class="text-center">어제판매금액</th>
+			<th class="text-center">현재판매금액</th>
+			<th class="text-center">정산예정금액</th>
+			</thead>
+			<tbody>
+
+
+			<!----
+			<tr>
+			<td>위브엔터테이먼트</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>랩스토리</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			<tr>
+			<td>크림하우스</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			<td class="text-center">0</td>
+			</tr>
+			--->
+			</tbody>
+			</table>
+</div>
+
+
+<!----- 게시판정보 불러오기 --->
+
+
+<div class="col-sm-6">
+			<h4 id="less" class="page-header">공지사항<a href="/board/list.php?table=board_acd5e65bde56e6794eedb5621ced7c28" class="btn btn-warning btn-sm" style="float:right;margin-top:-10px;" role="button" target="_blank">more</a></h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th style='text-align:center;width:80%;' class="text-center">제목</th>
+			<th class="text-center">날짜</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr><td><a href='/board/view.php?table=board_acd5e65bde56e6794eedb5621ced7c28&number=158' target='_blank'> 오프라인 교육지원 이벤트 결과 발표</a></td><td class='text-center'>2019-08-01</td></tr><tr><td><a href='/board/view.php?table=board_acd5e65bde56e6794eedb5621ced7c28&number=157' target='_blank'> 2019년 8월 카드사 무이자 이벤트</a></td><td class='text-center'>2019-07-31</td></tr><tr><td><a href='/board/view.php?table=board_acd5e65bde56e6794eedb5621ced7c28&number=156' target='_blank'> 7월25일 라이브방송 실시간시청 안내 입니다. </a></td><td class='text-center'>2019-07-30</td></tr><tr><td><a href='/board/view.php?table=board_acd5e65bde56e6794eedb5621ced7c28&number=155' target='_blank'> 라이크비 다운로드/설치 관련 공지</a></td><td class='text-center'>2019-07-29</td></tr><tr><td><a href='/board/view.php?table=board_acd5e65bde56e6794eedb5621ced7c28&number=154' target='_blank'> 인기게시물 신청 게시판이 오픈되었습니다</a></td><td class='text-center'>2019-07-27</td></tr>			</tbody>
+			</table>
+</div>
+
+
+
+<div class="col-sm-6">
+			<h4 id="less" class="page-header">Q&A (자주묻는 질문) <a href="/board/list.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90" class="btn btn-warning btn-sm" style="float:right;margin-top:-10px;" role="button">more</a></h4>
+			<table class="table table-bordered table-responsive">
+			<thead>
+			<tr>
+			<th style='text-align:center;width:80%;' class="text-center">제목</th>
+			<th class="text-center">날짜</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr><td><a href='/board/view.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90&number=17' target='_blank'> 라이크비(어플) 이용안내 가이드 입니다.</a></td><td class='text-center'>2019-08-08</td></tr><tr><td><a href='/board/view.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90&number=16' target='_blank'> 쇼핑몰 이용안내 상세가이드 입니다.</a></td><td class='text-center'>2019-07-15</td></tr><tr><td><a href='/board/view.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90&number=15' target='_blank'> LBM (위치기반 마케팅) Q&A 입니다.  (4차 내용 업데이트 - 8월 5일)</a></td><td class='text-center'>2019-07-03</td></tr><tr><td><a href='/board/view.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90&number=14' target='_blank'> 쇼핑몰 이용안내 기본가이드 입니다.</a></td><td class='text-center'>2019-06-24</td></tr><tr><td><a href='/board/view.php?table=board_6280f35a4c4068fc1ff82f582a5b3c90&number=13' target='_blank'> 글감 관련 모든 Q&A 입니다.</a></td><td class='text-center'>2019-06-10</td></tr>
+
+
+			</tbody>
+			</table>
+</div>
+
+
+</div>
+</div>
+
+		<footer class="main text-center" style="padding-bottom:20px;">
+		COPYRIGHT ⓒ 2019 <strong>ADPUMKIN.</strong> ALL RIGHTS RESERVED 
+		</footer>
+		</div><!-- /.main-content -->
+	</div><!-- /.page-container horizontal-menu -->
+
+
+</body>
+
+
+
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/bootstrap-datepicker.js"></script>
+
+		
+		<!-- Imported styles on this page -->
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/js/jvectormap/jquery-jvectormap-1.2.2.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/js/rickshaw/rickshaw.min.css">
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/js/icheck/skins/minimal/_all.css">
+
+	<!-- Bottom scripts (common) -->
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/gsap/main-gsap.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/bootstrap.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/joinable.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/resizeable.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/neon-api.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+
+
+	<!-- Imported scripts on this page -->
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jvectormap/jquery-jvectormap-europe-merc-en.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery.sparkline.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/rickshaw/vendor/d3.v3.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/rickshaw/rickshaw.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/raphael-min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/morris.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/toastr.js"></script>
+
+
+	<!-- JavaScripts initializations and stuff -->
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/neon-custom.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery.validate.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/neon-login.js"></script>
+
+
+	<script src="http://adpumkin.co.kr/_config/include/assets/imgsrc/js/jquery.gritter.min.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/imgsrc/js/jquery.overlay.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/imgsrc/js/bootbox.min.js"></script>
+
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery.nestable.js"></script>
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/icheck/icheck.min.js"></script>
+
+
+	<link rel="stylesheet" href="http://adpumkin.co.kr/_config/include/assets/js/selectboxit/jquery.selectBoxIt.css">
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/selectboxit/jquery.selectBoxIt.min.js"></script>
+
+	<script src="http://adpumkin.co.kr/_config/include/assets/js/jquery.inputmask.bundle.min.js"></script>
+
+
+
+</html>
+
+
+<script>
+	$(document).ready(function($)
+		{
+			// Skins
+		
+			$('input.icheck').iCheck({
+				checkboxClass: 'icheckbox_minimal-red',
+				radioClass: 'iradio_minimal-red'
+			});
+	});
+
+	$(function() {	 
+
+
+		var _CheckTopMenuHeight = function() {	
+			if($(window).width() < 767) $('.imgsrc-title-panel').css('margin-top','0');
+			else {
+				var TopMenuHeight = $('.navbar-inner').height();
+				$('.imgsrc-title-panel').css('margin-top',TopMenuHeight);
+			}
+
+		}
+
+		$(window).resize(_CheckTopMenuHeight);		
+		_CheckTopMenuHeight();
+		
+		
+	});
+
+
+</script>
+<!-- Channel Plugin Scripts -->
+
+<!-- End Channel Plugin -->
+<script>
+
+
+//클립보드 복사를 위한 설정
+
+	$(function() {
+			$('#CopyJoinUrl').on('click', function(e) {
+
+
+				// a의 텍스트값을 가져옴
+				var url = 	$(this).data("url");
+
+				$('#recurl').select();
+				try {
+					var successful = document.execCommand('copy');
+					if(successful) {
+						alert("클립보드로 복사 : "+$('#recurl').val());
+					}
+				} catch (err) {
+					alert('이 브라우저는 지원하지 않습니다.')
+				}
+
+			});
+
+			
+
+
+	});
+
+
+
+	var PayOpen = function(mode) {
+		// aaaaaaaaaaaaaaaaaa
+	var iFrameMinHeight = 660;
+	var iFrameMinWidth = 580;
+
+
+
+
+
+
+		$payWrapper = '';
+
+		var $payWrapper = $('div#_DAOUPAY_WRAPPER');
+		var $iframeCloseBtn = $('div#_DAOUPAY_CLOSE');
+		var _SRC = 'payment/payment.php';
+		var _Today = "20190815";
+
+		//if(_Today > '20190521') {
+			var iFrameMinHeight = 630;
+			var iFrameMinWidth = 740;
+			//var _SRC = 'payment/payment_T.php';
+		//}
+
+
+		if(mode=='regnum') _SRC = 'payment/regnum.php';
+
+
+		if("elinee"=='ioio84') {
+				var iFrameMinHeight = 630;
+				var iFrameMinWidth = 740;
+				var _SRC = 'payment/payment.php';
+		}
+
+
+
+	////////////////  아이폰 처리 /////////////////////
+
+		webbrowser=navigator.appVersion;
+		var currentOS;
+		var mobile = (/iphone|ipad|ipod|android/i.test(navigator.userAgent.toLowerCase()));
+		if (mobile) {
+
+			var userAgent = navigator.userAgent.toLowerCase();
+
+			if (userAgent.search("android") > -1)
+
+				currentOS = "android";
+
+			else if ((userAgent.search("iphone") > -1) || (userAgent.search("ipod") > -1) || (userAgent.search("ipad") > -1)) {
+
+				if(mode!='regnum')  _SRC = 'payment/payment_ios.php';
+
+
+				if("elinee"=='ioio84') {
+						var iFrameMinHeight = 630;
+						var iFrameMinWidth = 740;
+						var _SRC = 'payment/payment_ios.php';
+				}
+
+
+
+
+				currentOS = "ios";
+
+				var width = 720;
+				var height = 630;
+
+
+				var xpos = (screen.width - width) / 2;
+				var ypos = (screen.width - height) / 6;
+				var position = "top=" + ypos + ",left=" + xpos;
+				var features = position + ", width="+width+", height="+height+",toolbar=no, location=no";
+
+				window.name = "STPG_CLIENT";
+				wallet = window.open(_SRC, 'STPG_WALLET', features);
+
+				if ( wallet != null) {
+					return false;
+				} else {
+
+					if ((webbrowser.indexOf("Windows NT 5.1")!=-1) && (webbrowser.indexOf("SV1")!=-1)) {	// Windows XP Service Pack 2
+						alert("팝업이 차단되었습니다. 브라우저의 상단 노란색 [알림 표시줄]을 클릭하신 후 팝업창 허용을 선택하여 주세요.");
+					} else {
+						alert("팝업이 차단되었습니다.");
+					}
+				}
+
+
+				return false;
+			}
+
+		}
+
+		////////////////  아이폰 처리 /////////////////////
+
+			payOverlayOpen();
+
+
+		//if($payWrapper.length==0) {
+
+
+
+			$payWrapper = $('<div>', {id:'_DAOUPAY_WRAPPER', style:'border: 2px solid currentColor; border-image: none; left: 50%; top: 50%; width: 320px; height: 460px; overflow-x: auto; overflow-y:auto; display: block; position: fixed; z-index: 10000; -webkit-overflow-scrolling: touch; background-color:white;'});
+
+			$iframe = $('<iframe>', {id:'_DAOUPAY', name:'_DAOUPAY',src:_SRC, style:'margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; left: 0px; top: 0px; width: 100%; height: 100%; overflow: hidden; position: absolute;'});
+
+			$payWrapper.append($iframe);
+
+			$iframeCloseBtn = $('<div>', {id:'_DAOUPAY_CLOSE', style:'position:fixed; border:none; z-index:10001; cursor:pointer; width:20px; height:20px; text-align:center; padding-top:2px'}).html('<img src="/_config/images/close.png">');;
+			$payWrapper.append($iframeCloseBtn);
+			$iframeCloseBtn.on('click', function() {
+				DaouPayClose();
+			});
+
+			$('body').append($payWrapper);
+
+
+			$(window).on('resize',function() {
+				var $payWrapper = $('div#_DAOUPAY_WRAPPER');
+				var width = $(window).width()>iFrameMinWidth ? iFrameMinWidth :  $(window).width(); /* 20은 close 버튼때문에 */
+				var height = $(window).height()>iFrameMinHeight ? iFrameMinHeight : $(window).height() - 20;
+				var top = ($(window).height() - height) / 2;
+				var left = ($(window).width() - width) / 2; /* 10은 close 버튼때문에 */
+
+
+				$payWrapper.css("height",  height + "px");
+				$payWrapper.css("width", width + "px");
+				$payWrapper.css("top", top + "px");
+				$payWrapper.css("left", left + "px");
+				$iframeCloseBtn.css('top', (top - 3)+'px');
+				$iframeCloseBtn.css('right', (left+2)+'px');
+			});
+			$(window).trigger('resize');
+		//} else {
+		//	$payWrapper.show();
+		//	$iframeCloseBtn.show();
+		//}
+
+	}
+
+
+
+
+
+
+
+
+
+
+	var payOverlayOpen = function()
+	{
+
+		if ($('#overlay-shade').length == 0)
+			$('<div />', {id:"overlay-shade"}).prependTo($('body')).css({zIndex:10000, width:'100%', height:'100%', display:'block', opacity:0, backgroundColor:'black', position:'fixed'});
+
+		var $oLay = $('body');
+		$('#overlay-shade').fadeTo(300, 0.7, function() {});
+	}
+
+	var payOverlayClose = function(handler)
+	{
+		$('#overlay-shade').fadeOut(300, function() {
+			$(this).hide();
+			if(handler) handler();
+		});
+	}
+
+
+	var DaouPayClose = function(handler) {	// aaaaaaaaaaaaaaaaaaaaaaa
+		var $div = $('div#_DAOUPAY_WRAPPER');
+		//var $iframe = $('iframe#_DAOUPAY');
+		var $iframeCloseBtn = $('div#_DAOUPAY_CLOSE');
+		$div.hide();
+		//$iframe.hide();
+		$iframeCloseBtn.hide();
+		payOverlayClose(handler);
+	}
+
+	var DaouPaySuccess = function() {
+
+		// aaaaaaaaaaaaaaaaaaaaaaaaa
+		var $iframe = $('iframe#_DAOUPAY');
+		if($iframe.length>0) {
+			DaouPayClose(function() {
+				alert("결제가 정상적으로 처리 되었습니다.");
+				//document.location.href= "/shop/order_info.php?opid=adpumkin&od_id=";
+			});
+		}
+
+		/*
+		document.charset = 'UTF-8';
+		document.action = 'orderformupdate.php';
+		document.forderform.submit();
+		*/
+		//document.charset = 'UTF-8';
+		//document.action = 'orderformupdate.php';
+
+		//document.forderform.submit();
+
+	}
+
+	//if("1" < 1) PayOpen('regnum');
+
+		if("1" < '9' && "1" < 1) {
+			PayOpen('regnum');
+		}
+
+
+		if("elinee" == 'nanana') {
+			PayOpen('regnum');
+		}
+
+
+
+</script>
+
+
+<script>
+  ;window.channelPluginSettings = {
+    "pluginKey": "f7a8d1a5-87b4-440b-b456-d77b99b778aa"
+  };
+  (function() {
+    var w = window;
+    if (w.ChannelIO) {
+      return (window.console.error || window.console.log || function(){})('ChannelIO script included twice.');
+    }
+    var d = window.document;
+    var ch = function() {
+      ch.c(arguments);
+    };
+    ch.q = [];
+    ch.c = function(args) {
+      ch.q.push(args);
+    };
+    w.ChannelIO = ch;
+    function l() {
+      if (w.ChannelIOInitialized) {
+        return;
+      }
+      w.ChannelIOInitialized = true;
+      var s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
+      s.charset = 'UTF-8';
+      var x = document.getElementsByTagName('script')[0];
+      x.parentNode.insertBefore(s, x);
+    }
+    if (document.readyState === 'complete') {
+      l();
+    } else if (window.attachEvent) {
+      window.attachEvent('onload', l);
+    } else {
+      window.addEventListener('DOMContentLoaded', l, false);
+      window.addEventListener('load', l, false);
+    }
+  })();
+</script>
+
