@@ -1,0 +1,1596 @@
+if (typeof console === 'undefined') {
+	window.console = {
+		log     : function(){},
+		trace   : function(){},
+		debug   : function(){},
+		info    : function(){},
+		warn    : function(){},
+		error   : function(){}
+	}
+}
+
+
+appendStr=function(orgStr, appendStr, delim)
+{
+	if(orgStr.length>0) orgStr += delim;
+	orgStr += appendStr;
+	return orgStr;
+};
+
+checkTrueFalse=function(v)
+{
+	if(v == null) return false;
+	if(typeof v == 'undefined') return false;
+	if(typeof v == 'string') {
+		if(v.toUpperCase() == 'FALSE') return false;
+		if(v.toUpperCase() == 'NO') return false;
+		if(v == '0') return false;
+	}
+	return v?true:false;
+};
+String.prototype.checkTrueFalse=function() {return checkTrueFalse(this);}
+Number.prototype.checkTrueFalse=function() {return this!=0;}
+Boolean.prototype.checkTrueFalse=function() {return this;}
+
+windowOpen=function(attr)
+{
+	var optionStr="";
+	var url="";
+	var winName="";
+
+	if(typeof(attr) != 'undefined') {
+		winName=attr.name||"_blank";
+		url=attr.url||"";
+
+		if(typeof(attr.width)!='undefined') optionStr=appendStr(optionStr, "width="+attr.width, ',');
+		if(typeof(attr.height)!='undefined') optionStr=appendStr(optionStr, "height="+attr.height, ',');
+		if(attr.turnOnAll||typeof(attr.toolbar) != 'undefined') optionStr=appendStr(optionStr, "toolbar="+(attr.turnOnAll||checkTrueFalse(attr.toolbar) ? 'yes':'no'), ',');
+		else optionStr=appendStr(optionStr, "toolbar=no", ',');
+		if(attr.turnOnAll||typeof(attr.resizable) != 'undefined') optionStr=appendStr(optionStr, "resizable="+(attr.turnOnAll||checkTrueFalse(attr.resizable) ? 'yes':'no'), ',');
+		else optionStr=appendStr(optionStr, "resizable=yes", ',');
+		if(attr.turnOnAll||typeof(attr.statusbar) != 'undefined') optionStr=appendStr(optionStr, "statusbar="+(attr.turnOnAll||checkTrueFalse(attr.statusbar) ? 'yes':'no'), ',');
+		else optionStr=appendStr(optionStr, "statusbar=yes", ',');
+		if(attr.turnOnAll||typeof(attr.scrollbars) != 'undefined') optionStr=appendStr(optionStr, "scrollbars="+(attr.turnOnAll||checkTrueFalse(attr.scrollbars) ? 'yes':'no'), ',');
+		else optionStr=appendStr(optionStr, "scrollbars=yes", ',');
+		if(attr.turnOnAll||typeof(attr.menubar) != 'undefined') optionStr=appendStr(optionStr, "menubar="+(attr.turnOnAll||checkTrueFalse(attr.menubar) ? 'yes':'no'), ',');
+		else optionStr=appendStr(optionStr, "menubar=no", ',');
+	}
+	var win=window.open(url, winName, optionStr);
+	if(win) {win.focus();return win;}
+	return false;
+};
+
+//개인 환경 설정에 따라 작성/열람창을 팝업 또는 페이지 전환으로 열어준다.
+// url : 이동할 URL
+// form : submit 할 form
+// attr : 팝업창일때 팝업창의 속성windowOpen functin 참고
+// openType : 강제로 팝업창 또는 페이지 전환을 하고자 할때 지정 ('newWin' | 'onPage')
+// 개인 환경 설정값은 /_config/include/js/config.js.php 에 ...
+openForm=function(url, form, attr, openType)
+{
+	if(typeof openType == 'undefined' && $('body').hasClass('isPopup-true'))
+		openType = 'onPage';	// 팝업으로 열린 창에서는 강제로 지정하지 않는 이상 페이지 전환으로..
+
+	openType = openType||formOpenType;
+	if(!url) {
+		alert('url parameter is required!');
+		return;
+	}
+	url = url.trim();
+	if(openType && openType=='newWin') {
+		var newattr = attr || {'width':'1000px', 'height':'700px'};
+		var u = url;
+		if(u.indexOf('?')<0) u += "?";
+		if(u.charAt(u.length-1) !='&') u+= '&';
+		u += "isPopup=1";
+
+		newattr.url = u;
+		windowOpen(newattr);
+	} else {
+		var frm = form;
+		var createdNew = false;
+
+		if(!frm || frm == null || typeof(frm)!='object') frm = document.getElementById(form);
+		if(!frm || frm == null || typeof(frm)!='object') frm = document.getElementsByName(form)[0];
+		if(!frm || frm == null || typeof(frm)!='object') {
+			frm = $('<form />');
+			createdNew = true;
+		}
+		var $frm = $(frm);
+		var u = url;
+		var qidx = u.indexOf('?');
+		if(qidx>0) u = u.substring(0, qidx);
+
+		var params = getURLParameters(url);
+		params.isPopup = $('body').hasClass('isPopup-true') ? '1':'0';
+
+		for(var n in params) {
+			if(typeof n == 'undefined') continue;
+			$frm.find('[name="'+n+'"]').remove();
+			$frm.append($('<input />', {'type':'hidden', 'name':n, 'value':urldecode(params[n])}));
+		}
+
+		$frm.prop('action', u);
+		$frm.prop('method', 'get');
+		//if(openType=='_blank') $frm.prop('target', '_blank');
+		if(createdNew) $('body').append($frm);
+		$frm.submit();
+		if(createdNew) $frm.remove();
+	}
+};
+
+getURLParameters = function(url)
+{
+	if (url.indexOf("?") > 0)
+	{
+		var arrParams = url.split("?");
+		var arrURLParams = arrParams[1].split("&");
+		var params = {};
+
+		for (var i = 0; i < arrURLParams.length; i++) {
+			var tmparr = arrURLParams[i].split("=");
+			params[tmparr[0]] = decodeURIComponent(tmparr[1]);
+		}
+		return params;
+	}
+	return {};
+};
+
+postal_find=function(post,addr1,addr2,addr3)
+{
+	// var url="/_auth/address.php?post1="+post1+"&post2="+post2+"&addr1="+addr1+"&addr2="+addr2;
+	// if(typeof formName != 'undefined') url += '&formName='+formName;
+	// windowOpen({name:'postal_find', url:url, width:370, height:250, scrollbars:true});
+	if(typeof daum == 'undefined') {
+		alert('Please insert script\n<script src="//dmaps.daum.net/map_js_init/postcode.v2.js"></script>');
+		return;
+	}
+	new daum.Postcode({
+        oncomplete: function(data) {
+
+			// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            var fullAddr = ''; // 최종 주소 변수
+            var extraAddr = ''; // 조합형 주소 변수
+
+            // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                fullAddr = data.roadAddress;
+
+            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                fullAddr = data.jibunAddress;
+            }
+
+            // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
+            if(data.userSelectedType === 'R'){
+                //법정동명이 있을 경우 추가한다.
+                if(data.bname !== ''){
+                    extraAddr += data.bname;
+                }
+                // 건물명이 있을 경우 추가한다.
+                if(data.buildingName !== ''){
+                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                if(extraAddr !== '') extraAddr = '('+extraAddr+')';
+
+                // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
+                //fullAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+            }
+
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            $("input[name='"+post+"']").val(data.zonecode);
+            $("input[name='"+addr1+"']").val(fullAddr);
+            $("input[name='"+addr3+"']").val(extraAddr);
+
+            // 커서를 상세주소 필드로 이동한다.
+            $("input[name='"+addr2+"']").focus();
+
+
+        }
+    }).open();
+};
+
+var __fixSizeEl=null;
+var __heightOffsetEls=null;
+var __widthOffsetEls=null;
+var __opt=null;
+fixSize=function(elToFixSize, heightOffsetElName, widthOffsetElName, opt){
+	var _fixSizeOffset=function(dir){
+		var offsetEls=dir == "height" ? __heightOffsetEls : __widthOffsetEls;
+		if(offsetEls == null) return 0;
+		var offset=0;
+		for(var i=0; i<offsetEls.length; i++) {
+			if(offsetEls[i]) offset += parseInt(typeof offsetEls[i] == 'number' ? offsetEls[i] : dir == "height" ? offsetEls[i].getHeight() : offsetEls[i].getWidth(), 10);
+		}
+		return offset;
+	}
+	var _fixSize=function(){
+		if(__fixSizeEl == null)	return;
+
+		if(!__opt||!__opt.heightOnly) __fixSizeEl.setWidth( Math.max(document.body.clientWidth - __fixSizeEl.dom.offsetLeft - _fixSizeOffset("width"),0) );
+		if(!__opt||!__opt.widthOnly) __fixSizeEl.setHeight( Math.max(document.body.clientHeight - __fixSizeEl.dom.offsetTop - _fixSizeOffset("height"), 0) );
+
+		if(typeof(onAfterFixSize)!='undefined') onAfterFixSize();
+		_setAutoSubjectColumnWidthTimer();
+	}
+	var _makeOffsetEls=function(offsetElName) {
+		var offsetEls=new Array();
+		if(typeof offsetElName != 'undefined') {
+			if(typeof offsetElName == 'string' ) offsetEls.push(Ext.get(offsetElName));
+			else if(typeof offsetElName == 'number' ) offsetEls.push(offsetElName);
+			else {
+				for(var i=0; i<offsetElName.length; i++) {
+					if(typeof offsetElName[i] == 'string') offsetEls.push(Ext.get(offsetElName[i]));
+					else offsetEls.push(offsetElName[i]);
+				}
+			}
+		}
+		return offsetEls;
+	}
+
+	if(typeof opt != 'undefined') __opt=opt;
+	if(typeof elToFixSize != 'undefined' ) {
+		if(__fixSizeEl == null) {
+			if(typeof elToFixSize == 'string') __fixSizeEl=Ext.get(elToFixSize);
+			else __fixSizeEl=elToFixSize;
+		}
+		if(__fixSizeEl == null) return;
+
+		if(heightOffsetElName) __heightOffsetEls=_makeOffsetEls(heightOffsetElName);
+		if(widthOffsetElName) __widthOffsetEls=_makeOffsetEls(widthOffsetElName);
+
+		if(typeof(window.attachEvent) == "undefined" ) {
+			window.addEventListener("resize", _fixSize, false);
+			window.addEventListener("load", _fixSize, false);
+		} else {
+			window.attachEvent("onresize",	_fixSize);
+			window.attachEvent("onload",	_fixSize);
+		}
+	}
+	_fixSize();
+};
+
+makeURL=function(baseUrl, args)
+{
+	var URL=baseUrl;
+	var param='';
+	var valType='';
+	var val='';
+
+	for(var key in args) {
+		val=args[key];
+
+		valType=typeof(val);
+
+		if(valType == 'function') continue;
+		if(valType == 'undefined') continue;
+		if(val.length == 0) continue;
+
+		if(param.length>0) param += '&';
+		param += encodeURIComponent(key) + '=' + encodeURIComponent(val);
+	}
+	if(URL.indexOf('?')<0 && param.length>0) URL += '?';
+	else if(URL.indexOf('&') < URL.length-1 && param.length>0) URL += '&';
+	if(param.length>0 && param.length>0) URL += param;
+	if(URL.indexOf('?')>0) URL += '&';
+	return URL;
+};
+
+// alert exception dialog on DataStore Proxy has exception
+proxyLoadException=function(obj, arg, except)
+{
+	hideProcessing();
+	if(except.status == '200') Ext.Msg.alert('Exception', '<B>Response '+ except.statusText + ' but return text is </B><BR>' + htmlencode(except.responseText) + '<BR> in file <B>' + obj.conn.url + '</B>');
+	else Ext.Msg.alert('Exception', '<B>' + except.statusText + '</B>');
+};
+
+// JSON형식의 submit 결과를 parsing
+parseFormResult=function(o) {
+	var parseResponseText=function(txt)
+	{
+		var check1=/success/g;
+		var check2=/alertMsg/g;
+		var check3=/alertTitle/g;
+		if(!txt.match(check1)||!txt.match(check2)||!txt.match(check3) ) {
+			Ext.Msg.alert('Exception', '<B>Response '+ o.statusText + ' but return text is </B><BR>' + htmlencode(txt));
+			return false;
+		}
+		var resultObj=new Ext.util.JSON.decode(txt);
+		if(resultObj.alertMsg && resultObj.alertMsg.length > 0) {
+			Ext.Msg.alert(
+				(resultObj.alertTitle && resultObj.alertTitle.length > 0) ? resultObj.alertTitle : "",
+				resultObj.alertMsg
+			);
+		}
+		return resultObj.success;
+	}
+
+	hideProcessing();
+	if(typeof o.status == 'undefined') // file upload response
+		return parseResponseText(o.responseText);
+	else if(o.status == 200) // form action script is ok
+		return parseResponseText(o.responseText);
+	else // form action script has error
+		Ext.Msg.alert('Exception', '<B>' + o.statusText + '</B>');
+	return false;
+};
+
+// ActiveX의 결과를 Parsing
+parseActiveXEditorResult=function(uploadCompo) {
+	var parseResponseText=function(txt)
+	{
+		var check1=/success/g;
+		var check2=/alertMsg/g;
+		var check3=/alertTitle/g;
+		if(!txt.match(check1)||!txt.match(check2)||!txt.match(check3) ) {
+			alert('Unknown response return !!!!!\n\n' + txt);
+			return false;
+		}
+		var resultObj=new Ext.util.JSON.decode(txt);
+		if(resultObj.alertMsg && resultObj.alertMsg.length > 0) {
+			alert(
+				((resultObj.alertTitle && resultObj.alertTitle.length > 0) ? resultObj.alertTitle+"\n--------------------------------------\n" : "")
+				+
+				resultObj.alertMsg
+			);
+		}
+		return resultObj.success;
+	}
+
+	hideProcessing();
+
+	var resCode = uploadCompo.GetHttpResponseCode();
+	var resMsg = uploadCompo.GetHttpResponseBody();
+
+	if(resCode == 200) {
+		return parseResponseText(resMsg);
+	} else {
+		alert("Unknown error while submit!");
+		return false;
+	}
+};
+
+
+// 로딩중 ... 을 표시.
+var __spEl=null;
+var __spShown=false;
+showProcessing=function(str, showEl) {
+	var msgStr=str;
+
+	if(!msgStr||msgStr.length<1) msgStr=Ext.LoadMask ? Ext.LoadMask.prototype.msg : 'Loading...';
+	if(__spShown) hideProcessing();
+	if(Ext.LoadMask){
+		var el=null;
+		if(showEl) el=Ext.get('showEl');
+		if(!el) el=Ext.get('chartList');
+		if(!el) el=Ext.get('gridList');
+		if(!el) el=Ext.get(document.body);
+
+		__spEl=new Ext.LoadMask(el, {msg: msgStr});
+		__spEl.onBeforeLoad();
+	} else
+		__spEl=Ext.Msg.wait(msgStr, msgStr);
+	__spShown=true;
+};
+// 로딩중 ... 을 제거
+hideProcessing=function() {
+	if(__spShown) {
+		if(Ext.LoadMask){__spEl.onLoad();__spEl.destroy();__spEl=null;}
+		else __spEl.hide();
+		__spShown=false;
+	}
+};
+
+// AJAX 사용시 FCKEditor의 내용을 전송을 해주지 않으므로
+// 전송 해 주도록 (FCKEditor의 내용을 Form Field의 값으로 복사해 줌)
+// setFCK2Form('formFieldName');
+// setFCK2Form( new Array('formFieldName1', 'formFieldName1' ...) );
+setFCK2Form=function( vars ) {
+	var _setFCK2Form=function(elName) {
+		var elFCK=FCKeditorAPI.GetInstance(elName);
+		if(!elFCK ) return false;
+		elFCK.UpdateLinkedField();
+	}
+	if(typeof FCKeditorAPI != 'undefined' && FCKeditorAPI) {
+		if(typeof vars == 'string' ) _setFCK2Form(vars);
+		else if(typeof vars != 'undefined' ){ for(var i=0; i<vars.length; i++) _setFCK2Form(vars[i]); }
+	}
+};
+
+is_available_element=function(el)
+{
+	try
+	{
+	el=el.toString();
+	if(typeof(el)!='string') {alert("argument is not string type.");return false;}
+	var arr=el.split(".");var elname=''; var atype;
+	for(var i=0;i<arr.length;i++) {
+		elname=(i==0)?arr[i] : elname+'.'+arr[i];
+		atype=typeof(eval(elname));
+		if(atype=='undefined'||atype=='unkown') return false;
+	}
+	return true;
+	}
+	catch (e) {return false;}
+}
+;
+function number_format(number, decimals, dec_point, thousands_sep) {
+	//  discuss at: http://phpjs.org/functions/number_format/
+	// original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+	// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// improved by: davook
+	// improved by: Brett Zamir (http://brett-zamir.me)
+	// improved by: Brett Zamir (http://brett-zamir.me)
+	// improved by: Theriault
+	// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// bugfixed by: Michael White (http://getsprink.com)
+	// bugfixed by: Benjamin Lupton
+	// bugfixed by: Allan Jensen (http://www.winternet.no)
+	// bugfixed by: Howard Yeend
+	// bugfixed by: Diogo Resende
+	// bugfixed by: Rival
+	// bugfixed by: Brett Zamir (http://brett-zamir.me)
+	//  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+	//  revised by: Luke Smith (http://lucassmith.name)
+	//    input by: Kheang Hok Chin (http://www.distantia.ca/)
+	//    input by: Jay Klehr
+	//    input by: Amir Habibi (http://www.residence-mixte.com/)
+	//    input by: Amirouche
+	//   example 1: number_format(1234.56);
+	//   returns 1: '1,235'
+	//   example 2: number_format(1234.56, 2, ',', ' ');
+	//   returns 2: '1 234,56'
+	//   example 3: number_format(1234.5678, 2, '.', '');
+	//   returns 3: '1234.57'
+	//   example 4: number_format(67, 2, ',', '.');
+	//   returns 4: '67,00'
+	//   example 5: number_format(1000);
+	//   returns 5: '1,000'
+	//   example 6: number_format(67.311, 2);
+	//   returns 6: '67.31'
+	//   example 7: number_format(1000.55, 1);
+	//   returns 7: '1,000.6'
+	//   example 8: number_format(67000, 5, ',', '.');
+	//   returns 8: '67.000,00000'
+	//   example 9: number_format(0.9, 0);
+	//   returns 9: '1'
+	//  example 10: number_format('1.20', 2);
+	//  returns 10: '1.20'
+	//  example 11: number_format('1.20', 4);
+	//  returns 11: '1.2000'
+	//  example 12: number_format('1.2000', 3);
+	//  returns 12: '1.200'
+	//  example 13: number_format('1 000,50', 2, '.', ' ');
+	//  returns 13: '100 050.00'
+	//  example 14: number_format(1e-8, 8, '.', '');
+	//  returns 14: '0.00000001'
+
+	number = (number + '')
+	.replace(/[^0-9+\-Ee.]/g, '');
+	var n = !isFinite(+number) ? 0 : +number,
+		prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+		sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+		dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+		s = '',
+	toFixedFix = function(n, prec) {
+		var k = Math.pow(10, prec);
+		return '' + (Math.round(n * k) / k).toFixed(prec);
+	};
+	// Fix for IE parseFloat(0.55).toFixed(0) = 0;
+	s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+	if (s[0].length > 3) {
+		s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+	}
+	if ((s[1] || '').length < prec) {
+		s[1] = s[1] || '';
+		s[1] += new Array(prec - s[1].length + 1).join('0');
+	}
+	return s.join(dec);
+};
+String.prototype.number_format=function(decimals, dec_point, thousands_sep) {return number_format(this, decimals, dec_point, thousands_sep);};
+Number.prototype.number_format=function(decimals, dec_point, thousands_sep) {return number_format(this, decimals, dec_point, thousands_sep);};
+
+
+IntToSize=function(value, prec, shortUnit)
+{
+	var value2=value;
+	var unit='B';
+	if(value > 1000*1000*1000*1000) {value2=value/(1024*1024*1024*1000); unit='T';}
+	else if(value > 1000*1000*1000) {value2=value/(1024*1024*1024); unit='G';}
+	else if(value > 1000*1000) {value2=value/(1024*1024); unit='M';}
+	else if(value > 1000) {value2=value/1024; unit='K';}
+	if(!shortUnit && unit!='B') unit+='B';
+	if(!shortUnit && unit=='B') unit='Byte';
+	var value3 = number_format(value2,prec|| (unit.charAt(0)!='B'&&unit.charAt(0)!='K' ? 1:0));
+	if(value3=="0" && !prec) value3 = number_format(value2,1);
+	return value3+unit;
+};
+String.prototype.IntToSize=function(prec, shortUnit) {return IntToSize(parseFloat(this), prec, shortUnit);};
+Number.prototype.IntToSize=function(prec, shortUnit) {return IntToSize(this, prec, shortUnit);};
+
+
+SizeToInt=function(value)
+{
+	if( typeof(value)=="undefined" ) return 0;
+	if( typeof(value)=="number" ) return value;
+	if( typeof(value)!="string" ) return 0;
+	var intVal = value.toUpperCase();
+	var mul = 1;
+	intVal = intVal.replace(/ /g,'');
+	if(intVal.match(/T$/) || intVal.match(/TB$/)) mul = 1024*1024*1024*1024;
+	else if(intVal.match(/G$/) || intVal.match(/GB$/)) mul = 1024*1024*1024;
+	else if(intVal.match(/M$/) || intVal.match(/MB$/)) mul = 1024*1024;
+	else if(intVal.match(/K$/) || intVal.match(/KB$/)) mul = 1024;
+	intVal = intVal.replace(/[a-zA-Z,\.]/g,'');
+	if(intVal.match(/^\-/)) mul *= -1;
+	intVal = intVal.replace(/[+\-]/g,'');
+	intVal = parseInt(intVal);
+	intVal *= mul;
+	return intVal;
+};
+String.prototype.SizeToInt=function() {return SizeToInt(this);};
+Number.prototype.SizeToInt=function() {return this;};
+
+ellipsis=function(value,len){
+	if(value&&value.length>len){
+		return value.substr(0,len-3)+"...";
+	}
+	return value;
+};
+String.prototype.ellipsis=function(len){return ellipsis(this,eln);};
+Number.prototype.ellipsis=function(len){return ellipsis(""+this,eln);};
+
+
+htmlEncode=function(value){
+	return !value?value:(value+"").replace(/&/g,"&amp;").replace(/>/g,"&gt;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+};
+String.prototype.htmlEncode=function(){return htmlEncode(this);};
+Number.prototype.htmlEncode=function(){return this;};
+
+htmlDecode=function(value){
+	return !value?value:String(value).replace(/&amp;/g,"&").replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&quot;/g,"\"");
+};
+String.prototype.htmlDecode=function(){return htmlDecode(this);};
+Number.prototype.htmlDecode=function(){return this;};
+
+
+// urlencode, htmlencode
+String.prototype.urlencode=function(){
+	try{return encodeURIComponent(this);}catch(e){
+		try{return this.replace(/&/g,'%26').replace(/\?/g,'%3F').replace(/=/g,'%3D').replace(/\*/g,'%2A').replace(/\'/g,'%27').replace(/\(/g,'%28').replace(/\)/g,'%29').replace(/\~/g,'%7E');}catch(e){return this;}
+	}
+};
+urlencode=function(s) {return s.toString().urlencode();};
+String.prototype.htmlencode=function(){ try{return this.replace(/&/g,"&amp;").replace(/>/g,"&gt;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}catch(e){return this;} };
+htmlencode=function(s) {return s.toString().htmlencode();};
+
+// urlencode, htmlencode
+String.prototype.urldecode=function(){
+	try{return decodeURIComponent(this);}catch(e){
+		try{return this.replace(/%21/g,'(').replace(/%26/g,'&').replace(/%3F/g,'?').replace(/%3D/g,'=').replace(/%2A/g,'*').replace(/%27/g,"'").replace(/%28/g,'()').replace(/%29/g,')').replace(/%7E/g,'~'); }catch(e){return this;}
+	}
+};
+urldecode=function(s) {return s.toString().urldecode();};
+
+
+
+/*======================================================
+trim(),rtrim(),ltrim() : 공백 제거
+========================================================*/
+String.prototype.rtrim=function(){return this.replace(/\s+$/g,'');};
+String.prototype.ltrim=function(){return this.replace(/^\s+/g,'');};
+String.prototype.trim=function(){return this.rtrim().ltrim();};
+rtrim=function(s) {return s.toString().rtrim();};
+ltrim=function(s) {return s.toString().ltrim();};
+trim=function(s) {return s.toString().trim();};
+
+// Check if numeric key
+IsDigit=function(ev) {
+	// onkeydown="IsDigit()" style="ime-mode:disabled"
+	var evt=Ext.isGecko ? ev : event;
+	if(
+		((evt.keyCode >= 48) && (evt.keyCode <= 57)) ||	// keyboard
+		((evt.keyCode >= 96) && (evt.keyCode <= 105)) ||	// keypad
+		(evt.keyCode == 9) ||	// tab
+		(evt.keyCode == 10)||	// enter
+		((evt.keyCode >= 35) && (evt.keyCode <= 40)) ||	// arrow and home,end
+		(evt.keyCode == 45)||	(evt.keyCode == 46)||	// insert, delete
+		(evt.keyCode == 8) ||	(evt.keyCode == 144)	// BS, NumLock
+		)
+	{
+		if(Ext.isIE ) event.returnValue=true;
+	} else {
+		if(Ext.isGecko ) evt.preventDefault();
+		else evt.returnValue=false;
+	}
+};
+
+CheckIsNum=function(val, allowBlank) {
+	var reg =/^[-+]*[0-9.]+$/;
+	if(allowBlank && val.length<10) return true;
+	if(reg.test(val)) return true;
+	return false;
+};
+String.prototype.isNumber=function(allowBlank) {return CheckIsNum(this, allowBlank);};
+Number.prototype.isNumber=function(allowBlank) {return true;};
+
+CheckIsDomain=function(val, allowBlank) {
+	var reg =/^ftp|http|https:\/\/[\.a-zA-Z0-9-]+\.[a-zA-Z]+$/;
+	if(allowBlank && val.length<10) return true;
+	if(reg.test(val)) return true;
+	return false;
+};
+String.prototype.isDomain=function(allowBlank) {return CheckIsDomain(this, allowBlank);};
+Number.prototype.isDomain=function(allowBlank) {return false;};
+Boolean.prototype.isDomain=function(allowBlank) {return false;};
+
+
+// Byte count
+// Korean is 2 bytes
+ByteCount=function(str) {
+	var i,m=str.length,re_count=0,val=0;
+	for(i=0;i<m;i++) {
+		val=escape(str.charAt(i)).length;
+		if(val>3) re_count++;
+		re_count++;
+	}
+	return re_count;
+};
+String.prototype.ByteCount=function(){return ByteCount(this);};
+Number.prototype.ByteCount=function(){return (this+'').length();};
+
+// check space is included in string
+checkspace=function(str)
+{
+	if(str.indexOf(" ")>=0) return false;
+	return true;
+};
+String.prototype.checkspace=function() { return checkspace(this); };
+Number.prototype.checkspace=function() { return false};
+
+// Save cookie value
+// sName : Variable name of cookie
+// sValue : Cookie value
+// nDays : expire date
+setCookie=function( sName, sValue, nDays ) {
+	var expires="";
+	if(nDays ) {
+		var d=new Date();
+		d.setTime( d.getTime()+nDays*24*60*60*1000);
+		expires="; expires="+d.toGMTString();
+	}
+	document.cookie=sName+"="+sValue+expires+"; path=/";
+};
+
+
+// Get cookie value
+// sName : Variable name of cookie
+getCookie=function(sName) {
+	var re=new RegExp( "(\;|^)[^;]*(" + sName + ")\=([^;]*)(;|$)" );
+	var res=re.exec( document.cookie );
+	return res != null ? res[3] : null;
+};
+
+// Delete cookie value
+// sName : Variable name of cookie
+removeCookie=function( name ) {
+	setCookie(name,"",-1);
+};
+
+// URL Parsing
+parseURL=function(url) {
+    var a =  document.createElement('a');
+    a.href = url;
+    return {
+        source: url,
+        protocol: a.protocol.replace(':',''),
+        host: a.hostname,
+        port: a.port,
+        query: a.search,
+        params: (function(){
+            var ret = {},
+                seg = a.search.replace(/^\?/,'').split('&'),
+                len = seg.length, i = 0, s;
+            for (;i<len;i++) {
+                if (!seg[i]) { continue; }
+                s = seg[i].split('=');
+                ret[s[0]] = s[1];
+            }
+            return ret;
+        })(),
+        file: (a.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1],
+        hash: a.hash.replace('#',''),
+        path: a.pathname.replace(/^([^\/])/,'/$1'),
+        relative: (a.href.match(/tp:\/\/[^\/]+(.+)/) || [,''])[1],
+        segments: a.pathname.replace(/^\//,'').split('/')
+    };
+};
+
+clone=function(o){
+    var n={};
+    for(i in o)
+      n[i]= (typeof o[i]=='object')?arguments.callee(o[i]):o[i];
+    return n;
+};
+
+// Show message dialog box
+// mboxtype : 1 => OK
+// mboxtype : 2 => OK, Cancel
+// mboxtype : 3 => OK, Cancel, Retry
+// userbtn Example var userbtn=new Array('OK', 'Cancel', 'Retry');
+msgbox=function( msg, title, mboxtype, width, height, defaultbtn, userbtn)
+{
+	var defaultbtn=new Array();
+	defaultbtn[1]=new Array('OK');
+	defaultbtn[2]=new Array('OK','Cancel');
+	defaultbtn[3]=new Array('OK','Cancel','Retry');
+
+	if(msg==null||typeof(msg)=='undefined'||trim(msg)=='' ) {
+		alert('Have not message..');
+		return;
+	}
+	if(title==null||typeof(title)=='undefined'||trim(title)=='' ) title='OK';
+	if(mboxtype==null||typeof(mboxtype)=='undefined'||trim(mboxtype)=='' ) mboxtype=2;
+	if(width==null||typeof(width)=='undefined') width='350px';
+	if(height==null||typeof(height)=='undefined') height='150px';
+	if(defaultbtn==null||typeof(defaultbtn)=='undefined') defaultbtn=0;
+	if(userbtn==null||typeof(userbtn)=='undefined'||trim(userbtn)=='' ) userbtn=new Array();
+
+	var urldata="msg="+msg+"&title="+title;
+
+	if(userbtn.length>0) var buttonarray=userbtn;
+	else var buttonarray=defaultbtn[mboxtype];
+
+	if(buttonarray.length>0) {
+		for(var i=0; i<buttonarray.length; i++) {
+			urldata += "&buttons[]="+buttonarray[i];
+		}
+	}
+
+	if(defaultbtn>0) urldata += "&default="+defaultbtn;
+
+	arg=showModalDialog( "/_kms/checkbox.php?"+urldata, null,
+							 "font-family:Verdana; font-size:12; status:no; dialogWidth:"+width+"; dialogHeight:"+height+"" );
+	if(arg==null) return 0;
+	else return arg;
+};
+
+
+// 숫자를 한글표기로
+num2han=function(string)
+{
+var hn=new Array("영","일","이","삼","사","오","육","칠","팔","구");
+var hj=new Array("","만","억","조","경","해","시","양","구","간","정","재","극","항하사","아승지","나유타","불가사의","무량대수");
+var ul=new Array("영천","영백","영십","영");
+var tm=new Array();
+var result="";
+
+var string=stripcomma(string);
+var count=0;
+var sum=0;
+
+if (string.charAt(0)=="-"){result="마이너스 "; string=string.substr(1,string.length-1);}
+var loop_size=Math.ceil(string.length/4);
+var string2="";
+for (var count=string.length; count >= 0; count--)
+  string2 += string.substring(count,count-1);
+string=string2;
+
+for (var A=0;A<loop_size;A++)
+{
+	sum=hj[A] + " ";
+	tm[A]=string.substr(A*4,4);
+
+	tm2="";
+	for (var count=tm[A].length; count >= 0; count--)
+		tm2 += tm[A].substring(count,count-1);
+	tm[A]=tm2;
+	part_jari=tm[A].length;
+	for (var D=0;D<10;D++){
+		 for (B=0;B<10;B++) tm[A]=tm[A].replace(B,hn[B]);
+	}
+
+	if (part_jari == 4) tm[A]=tm[A].charAt(0)+"천"+tm[A].charAt(1)+"백"+tm[A].charAt(2)+"십"+tm[A].charAt(3);
+	else if (part_jari == 3) tm[A]=tm[A].charAt(0)+"백"+tm[A].charAt(1)+"십"+tm[A].charAt(2);
+	else if (part_jari == 2) tm[A]=tm[A].charAt(0)+"십"+tm[A].charAt(1);
+	else tm[A]=tm[A].charAt(0);
+	for(var C=0;C<4;C++)
+		if (tm[A].match(ul[C])){ part_jari--; tm[A]=tm[A].replace(ul[C],""); }
+	if(part_jari != 0)tm[A]+=sum;
+}
+
+for(loop_size;loop_size>-1;loop_size--) result += tm[loop_size];
+	result=result.replace("undefined","");
+return result;
+};
+num2kor=num2han;
+
+
+// "abcd {0} defgh {1}".format('str1', 'str2');
+String.prototype.format = function() {
+    var str = this.toString();
+    if (!arguments.length)
+        return str;
+    var args = typeof arguments[0];
+        args = (("string" == args || "number" == args) ? arguments : arguments[0]);
+    for (arg in args)
+        str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+    return str;
+};
+
+addcomma=function(str)
+{
+	str=stripcomma(str);
+	var retValue="";
+
+	if(str.substring(0,1) =='-') var sign=true;
+	else var sign=false;
+
+	for(var i=0; i<str.length; i++)
+	{
+		if((str.length-1)==i&&sign) retValue=str.charAt(str.length-i-1)+retValue;
+		else retValue=(i>0&&(i%3)==0) ? str.charAt(str.length-i-1)+","+retValue : str.charAt(str.length-i-1)+retValue;
+	}
+	return retValue;
+};
+
+stripcomma=function(str)
+{
+	var ch;	var retValue=""
+	str=""+str+"";
+	for(var i=0; i<str.length; i++)
+	{
+		ch=str.charAt(i);
+		if((ch.charCodeAt(0)>=48 && ch.charCodeAt(0) <= 57)||ch.charCodeAt(0)==45) retValue += ch;
+	}
+	return retValue;
+};
+
+// isuser DSPLIT1 id DSPLIT1 name DSPLIT1 .... 형식으로 된 내용을 조직도로 넘길 때
+// isuser DSPLIT1 id  으로만 줄인다.
+stripOrgStr=function(str)
+{
+	var strip123=function(str) {
+		var arr=str.split(DSPLIT1);
+		return arr[0]+DSPLIT1+arr[1];	// return only isuser and id
+	}
+
+	var d3=str.indexOf(DSPLIT3)>=0?true:false;
+	var d2=str.indexOf(DSPLIT2)>=0?true:false;
+	var d1=str.indexOf(DSPLIT1)>=0?true:false;
+
+	if(d3) {	// 3 demension
+		var newstr2='';
+		var arr2=str.split(DSPLIT3);
+		for(j=0; j<arr2.length; j++) {
+			var str=arr2[j];
+			var arr1=str.split(DSPLIT2);
+			var newstr='';
+			for(var i=0; i < arr1.length; i++) {
+				if(newstr.length>0) newstr += DSPLIT2;
+				newstr += strip123(arr1[i]);
+			}
+			if(newstr2.length>0) newstr2 += DSPLIT2;
+			newstr2 += newstr;
+		}
+		return newstr2;
+	} else if(d2) {	// 2 demension
+		var arr1=str.split(DSPLIT2);
+		var newstr='';
+		for(var i=0; i < arr1.length; i++) {
+			if(newstr.length>0) newstr += DSPLIT2;
+			newstr += strip123(arr1[i]);
+		}
+		return newstr;
+	} else if(d1) {	// 1 demension
+		return strip123(str);
+	}
+	return str;
+};
+
+isImageFile=function(filename)
+{
+	try
+	{
+	var a=filename.split(".");
+	var x=a[a.length-1].toUpperCase();
+	if(x=='JPG'||x=='JPEG'||x=='GIF'||x=='PNG') return true;
+	return false;
+	}
+	catch(e){return false;}
+};
+
+changePage=function(menu, menusub) {
+	try {_changePage(menu, menusub);return;} catch(e) {}
+	try {parent._changePage(menu, menusub);return;} catch(e) {}
+	try {owner._changePage(menu, menusub);return;} catch(e) {}
+	try {parent.parent._changePage(menu, menusub);return;} catch(e) {}
+};
+renderDateTime=function(value){
+	try{
+	if(typeof(value) != 'object') return '';
+	var dateDt=value.dateFormat(DATEFORMAT_Ymd);
+	var dateTm=value.dateFormat(DATEFORMAT_His);
+	var curDt=new Date().dateFormat(DATEFORMAT_Ymd);;
+	var valDt=value.add(Date.DAY, 1);
+	if(curDt==dateDt) return dateTm;
+	return '<span title="'+dateTm+'">'+dateDt+'</span>';
+	} catch(e) {return value;}
+};
+renderFullDateTime=function(value){
+	try{
+	if(typeof(value) != 'object') return '';
+	return renderDate(value)+' '+renderTime(value);
+	} catch(e) {return value;}
+};
+renderDate=function(value){
+	try{
+	return value.dateFormat(DATEFORMAT_Ymd);
+	} catch(e) { return value.toString(); }
+};
+renderTime=function(value){
+	try{
+	return value.dateFormat(DATEFORMAT_His);
+	} catch(e) { return value.toString(); }
+};
+renderSize=function(value){
+	try{
+	return IntToSize(value);
+	} catch(e) { return value.toString(); }
+
+};
+renderAttach=function (value, p, record){
+	try{
+	var s='';var hint = value;
+	if(value.match(/\|\|/)) s='||';
+	else if(value.match(/::/)) s='::';
+	if(s.length>0) {
+		var arr = value.split(s);
+		hint = '';
+		for(var i=0; i<arr.length; i++) {
+			if(hint.length>0) hint += '\n';
+			hint+= arr[i];
+		}
+	}
+	if(value.length > 1) return '<img src="'+iconPathBase+'common/attach.png" align=absmiddle title="'+htmlencode(hint)+'"></center>';
+	return '&nbsp;';
+	} catch(e) { return value || '&nbsp;'; }
+};
+
+// auto ajust column width
+_setAutoSubjectColumnWidth=function(grid, subjectIndex, minWidth) {
+	var cm=grid.colModel;
+	var min=minWidth||10;
+	var allWidth=0, clientW=grid.getView().scroller.dom.clientWidth;
+	for(var i=0; i<cm.getColumnCount(); i++) {
+		allWidth += (i==subjectIndex||cm.isHidden(i)) ? 0: parseInt(cm.getColumnWidth(i));
+	}
+//	allWidth+=17;// for scrollbar space;
+	cm.setColumnWidth(subjectIndex, Math.max(clientW - allWidth, min));
+};
+_setAutoSubjectColumnWidthTimer=function() {
+	for(var i=0; __AutoAjustColumn && i<__AutoAjustColumn.length; i++)
+		_setAutoSubjectColumnWidth(__AutoAjustColumn[i][0], __AutoAjustColumn[i][1], __AutoAjustColumn[i][2]);
+};
+var __AutoAjustColumn=new Array();
+var __authColumnAjustTimer=null;
+setAutoSubjectColumnWidth=function(grid, subjectIndex, minWidth) {
+	__AutoAjustColumn[ __AutoAjustColumn.length ]=new Array(grid, subjectIndex, minWidth);
+	_setAutoSubjectColumnWidth(grid, subjectIndex, minWidth);
+	if(!__authColumnAjustTimer) __authColumnAjustTimer=setInterval(_setAutoSubjectColumnWidthTimer, 300);
+};
+// end of auto ajust column width
+
+checkIPForm=function(ip) {
+	windowOpen({name:'checkIPAddress'.ip, url:"/_util/check_ip.php?ip="+ip, width:650, height:700, scrollbars:true});
+};
+
+function replaceSearchKey1 (searchKey,$apply) {
+	//var search = $("input:hidden[name='listSearchKey']").val();
+	if(searchKey=="") return;
+	if($apply==undefined) $apply=$(".gw-search-key");
+	var reg=new RegExp(searchKey,'gi');
+	$apply.each(function(idx,ele){
+		var re=$(ele).html();
+		$(ele).html(re.replace(reg,"<rs>"+searchKey+"</rs>"));
+	});
+}
+
+function replaceSearchKey (searchKey,$apply) {
+	//var search = $("input:hidden[name='listSearchKey']").val();
+	if(searchKey=="") return;
+	if($apply==undefined) $apply=$(".gw-search-key");
+	var skey = searchKey.split("+");
+	var rkey = "(";
+	for(var i=0;i<skey.length;i++) {
+		if(i>0) rkey+="|";
+		rkey+=skey[i];
+	}
+	rkey+=")";
+	console.log(rkey);
+	var reg=new RegExp(rkey,'gi');
+	$apply.each(function(idx,ele){
+		if($(ele).data("search-apply")) {}
+		else {
+			var re=$(ele).html();
+			$(ele).data("search-apply",true);
+			$(ele).html(re.replace(reg,"<rs>$1</rs>"));
+		}
+	});
+}
+
+
+function gotoSearch(searchKey,searchMenu,searchField,isPopup) {
+	if(searchKey==undefined||searchKey=="") return;
+	isPopup=(isPopup==true||isPopup=="true");
+	var target=isPopup?"newWin":"page";
+	if(searchMenu==undefined) searchMenu="";
+	if(searchField==undefined) searchField="";
+
+	var url = "/_kms/search.php?isPopup="+isPopup+"&listSearchKey="+encodeURI(searchKey)+"&listSearchMenu="+searchMenu+"&listSearchField="+searchField;
+	openForm(url, null,{'name':'__search__','width':'934', 'height':'800'},target)
+}
+
+function check_all(f)
+{
+    var chk = document.getElementsByName("chk[]");
+    for (i=0; i<chk.length; i++)
+        chk[i].checked = f.chkall.checked;
+}
+
+
+/**
+ * 우편번호 창
+ **/
+var daum_zip = function(frm_name,zip_case, frm_zip, frm_post,  frm_addr1, frm_addr2, frm_addr3, frm_jibeon) {
+    if(typeof daum === 'undefined'){
+        alert("다음 juso.js 파일이 로드되지 않았습니다.");
+        return false;
+    }
+
+	var zip_case = 0;   //0이면 레이어, 1이면 페이지에 끼워 넣기, 2이면 새창
+    var complete_fn = function(data){
+        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+        var fullAddr = ''; // 최종 주소 변수
+        var extraAddr = ''; // 조합형 주소 변수
+
+        // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+            fullAddr = data.roadAddress;
+
+        } else { // 사용자가 지번 주소를 선택했을 경우(J)
+            fullAddr = data.jibunAddress;
+        }
+
+        // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
+        if(data.userSelectedType === 'R'){
+            //법정동명이 있을 경우 추가한다.
+            if(data.bname !== ''){
+                extraAddr += data.bname;
+            }
+            // 건물명이 있을 경우 추가한다.
+            if(data.buildingName !== ''){
+                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+            }
+            // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
+            extraAddr = (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+        }
+
+        // 우편번호와 주소 정보를 해당 필드에 넣고, 커서를 상세주소 필드로 이동한다.
+        var of = document[frm_name];
+            //of[frm_zip1].value = data.postcode1;
+            //of[frm_zip2].value = data.postcode2;
+            of[frm_post].value = data.postcode1+' - '+ data.postcode2;
+
+            of[frm_addr1].value = data.address1;
+            of[frm_addr2].value = "";
+            of[frm_addr3].value = "";
+			if( data.addressType == "R" ){  //도로명이면
+                of[frm_addr3].value = data.address2;
+            }
+            if(of[frm_jibeon] !== undefined){
+                of[frm_jibeon].value = data.addressType;
+            }
+
+            of[frm_addr2].focus();
+
+    };
+
+switch(zip_case) {
+        case 1 :    //iframe을 이용하여 페이지에 끼워 넣기
+            var daum_pape_id = 'daum_juso_page'+frm_zip,
+                element_wrap = document.getElementById(daum_pape_id),
+                currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+            if (element_wrap == null) {
+                element_wrap = document.createElement("div");
+                element_wrap.setAttribute("id", daum_pape_id);
+                element_wrap.style.cssText = 'display:none;border:1px solid;left:0;width:100%;height:300px;margin:5px 0;position:relative;-webkit-overflow-scrolling:touch;';
+                element_wrap.innerHTML = '<img src="//i1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-21px;z-index:1" class="close_daum_juso" alt="접기 버튼">';
+                jQuery('form[name="'+frm_name+'"]').find('input[name="'+frm_addr1+'"]').before(element_wrap);
+                jQuery("#"+daum_pape_id).off("click", ".close_daum_juso").on("click", ".close_daum_juso", function(e){
+                    e.preventDefault();
+                    jQuery(this).parent().hide();
+                });
+            }
+
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                    // iframe을 넣은 element를 안보이게 한다.
+                    element_wrap.style.display = 'none';
+                    // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                    document.body.scrollTop = currentScroll;
+                },
+                // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분.
+                // iframe을 넣은 element의 높이값을 조정한다.
+                onresize : function(size) {
+                    element_wrap.style.height = size.height + "px";
+                },
+                width : '100%',
+                height : '100%'
+            }).embed(element_wrap);
+
+            // iframe을 넣은 element를 보이게 한다.
+            element_wrap.style.display = 'block';
+            break;
+        case 2 :    //새창으로 띄우기
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                }
+            }).open();
+            break;
+        default :   //iframe을 이용하여 레이어 띄우기
+            var rayer_id = 'daum_juso_rayer'+frm_zip,
+                element_layer = document.getElementById(rayer_id);
+            if (element_layer == null) {
+                element_layer = document.createElement("div");
+                element_layer.setAttribute("id", rayer_id);
+                element_layer.style.cssText = 'display:none;border:5px solid;position:fixed;width:300px;height:460px;left:50%;margin-left:-155px;top:50%;margin-top:-235px;overflow:hidden;-webkit-overflow-scrolling:touch;z-index:10000';
+                element_layer.innerHTML = '<input type="button" value="닫기" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" class="close_daum_juso" alt="닫기 버튼">';
+                document.body.appendChild(element_layer);
+                jQuery("#"+rayer_id).off("click", ".close_daum_juso").on("click", ".close_daum_juso", function(e){
+                    e.preventDefault();
+                    jQuery(this).parent().hide();
+                });
+            }
+
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                    // iframe을 넣은 element를 안보이게 한다.
+                    element_layer.style.display = 'none';
+                },
+                width : '100%',
+                height : '100%'
+            }).embed(element_layer);
+
+            // iframe을 넣은 element를 보이게 한다.
+            element_layer.style.display = 'block';
+    }
+}
+
+
+/**
+ * 우편번호 창
+ **/
+var win_zip = function(frm_name,zip_case, frm_zip, frm_addr1, frm_addr2, frm_addr3, frm_jibeon) {
+    if(typeof daum === 'undefined'){
+        alert("다음 우편번호 postcode.v2.js 파일이 로드되지 않았습니다.");
+        return false;
+    }
+
+    var zip_case = 1;   //0이면 레이어, 1이면 페이지에 끼워 넣기, 2이면 새창
+
+    var complete_fn = function(data){
+        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+        var fullAddr = ''; // 최종 주소 변수
+        var extraAddr = ''; // 조합형 주소 변수
+
+        // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+            fullAddr = data.roadAddress;
+
+        } else { // 사용자가 지번 주소를 선택했을 경우(J)
+            fullAddr = data.jibunAddress;
+        }
+
+        // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
+        if(data.userSelectedType === 'R'){
+            //법정동명이 있을 경우 추가한다.
+            if(data.bname !== ''){
+                extraAddr += data.bname;
+            }
+            // 건물명이 있을 경우 추가한다.
+            if(data.buildingName !== ''){
+                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+            }
+            // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
+            extraAddr = (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+        }
+
+        // 우편번호와 주소 정보를 해당 필드에 넣고, 커서를 상세주소 필드로 이동한다.
+        var of = document[frm_name];
+        of[frm_zip].value = data.zonecode;
+		
+
+		if(data.buildingName.length > 0) {
+			fullAddr += ' ('+data.buildingName+')';
+		}
+
+        of[frm_addr1].value = fullAddr;
+        of[frm_addr3].value = extraAddr;
+
+        if(of[frm_jibeon] !== undefined){
+            of[frm_jibeon].value = data.userSelectedType;
+        }
+
+        of[frm_addr2].focus();
+    };
+
+
+    switch(zip_case) {
+        case 1 :    //iframe을 이용하여 페이지에 끼워 넣기
+            var daum_pape_id = 'daum_juso_page'+frm_zip,
+                element_wrap = document.getElementById(daum_pape_id),
+                currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+            if (element_wrap == null) {
+                element_wrap = document.createElement("div");
+                element_wrap.setAttribute("id", daum_pape_id);
+                element_wrap.style.cssText = 'display:none;border:1px solid;left:0;width:100%;height:300px;margin:5px 0;position:relative;-webkit-overflow-scrolling:touch;';
+                element_wrap.innerHTML = '<img src="//i1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-21px;z-index:1" class="close_daum_juso" alt="접기 버튼">';
+                jQuery('form[name="'+frm_name+'"]').find('input[name="'+frm_addr1+'"]').before(element_wrap);
+                jQuery("#"+daum_pape_id).off("click", ".close_daum_juso").on("click", ".close_daum_juso", function(e){
+                    e.preventDefault();
+                    jQuery(this).parent().hide();
+                });
+            }
+
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                    // iframe을 넣은 element를 안보이게 한다.
+                    element_wrap.style.display = 'none';
+                    // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                    document.body.scrollTop = currentScroll;
+                },
+                // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분.
+                // iframe을 넣은 element의 높이값을 조정한다.
+                onresize : function(size) {
+                    element_wrap.style.height = size.height + "px";
+                },
+                width : '100%',
+                height : '100%'
+            }).embed(element_wrap);
+
+            // iframe을 넣은 element를 보이게 한다.
+            element_wrap.style.display = 'block';
+            break;
+        case 2 :    //새창으로 띄우기
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                }
+            }).open();
+            break;
+        default :   //iframe을 이용하여 레이어 띄우기
+            var rayer_id = 'daum_juso_rayer'+frm_zip,
+                element_layer = document.getElementById(rayer_id);
+            if (element_layer == null) {
+                element_layer = document.createElement("div");
+                element_layer.setAttribute("id", rayer_id);
+                element_layer.style.cssText = 'display:none;border:5px solid;position:fixed;width:300px;height:460px;left:50%;margin-left:-155px;top:50%;margin-top:-235px;overflow:hidden;-webkit-overflow-scrolling:touch;z-index:10000';
+                element_layer.innerHTML = '<img src="//i1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnCloseLayer" style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" class="close_daum_juso" alt="닫기 버튼">';
+                document.body.appendChild(element_layer);
+                jQuery("#"+rayer_id).off("click", ".close_daum_juso").on("click", ".close_daum_juso", function(e){
+                    e.preventDefault();
+                    jQuery(this).parent().hide();
+                });
+            }
+
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    complete_fn(data);
+                    // iframe을 넣은 element를 안보이게 한다.
+                    element_layer.style.display = 'none';
+                },
+                width : '100%',
+                height : '100%'
+            }).embed(element_layer);
+
+            // iframe을 넣은 element를 보이게 한다.
+            element_layer.style.display = 'block';
+    }
+}
+
+
+
+// 전역 변수
+var errmsg = "";
+var errfld = null;
+
+// 필드 검사
+function check_field(fld, msg)
+{
+    //if ((fld.value = trim(fld.value)) == "")
+	if (fld.value.length < 1)
+        error_field(fld, msg);
+    else
+        clear_field(fld);
+    return;
+}
+
+// 필드 오류 표시
+function error_field(fld, msg)
+{
+    if (msg != "")
+        errmsg += msg + "\n";
+    if (!errfld) errfld = fld;
+    fld.style.background = "#BDDEF7";
+}
+
+// 필드를 깨끗하게
+function clear_field(fld)
+{
+    fld.style.background = "#FFFFFF";
+}
+
+
+
+function NewSms(phonenum)	{
+	var w=window.open("/sms/sms_send/form.php?phonenum="+phonenum,'',"resizable=yes, width=700, height=500, scrollbars=auto,resizable=yes");
+	w.focus();
+}
+
+
+(function(window) {
+    'use strict'
+
+    var re = {
+        not_string: /[^s]/,
+        not_bool: /[^t]/,
+        not_type: /[^T]/,
+        not_primitive: /[^v]/,
+        number: /[diefg]/,
+        numeric_arg: /bcdiefguxX/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf() {
+        var key = arguments[0], cache = sprintf.cache
+        if (!(cache[key] && cache.hasOwnProperty(key))) {
+            cache[key] = sprintf.parse(key)
+        }
+        return sprintf.format.call(null, cache[key], arguments)
+    }
+
+    sprintf.format = function(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ''
+        for (i = 0; i < tree_length; i++) {
+            node_type = get_type(parse_tree[i])
+            if (node_type === 'string') {
+                output[output.length] = parse_tree[i]
+            }
+            else if (node_type === 'array') {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && get_type(arg) == 'function') {
+                    arg = arg()
+                }
+
+                if (re.numeric_arg.test(match[8]) && (get_type(arg) != 'number' && isNaN(arg))) {
+                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case 'b':
+                        arg = parseInt(arg, 10).toString(2)
+                    break
+                    case 'c':
+                        arg = String.fromCharCode(parseInt(arg, 10))
+                    break
+                    case 'd':
+                    case 'i':
+                        arg = parseInt(arg, 10)
+                    break
+                    case 'j':
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                    break
+                    case 'e':
+                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
+                    break
+                    case 'f':
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                    break
+                    case 'g':
+                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
+                    break
+                    case 'o':
+                        arg = arg.toString(8)
+                    break
+                    case 's':
+                        arg = String(arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case 't':
+                        arg = String(!!arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case 'T':
+                        arg = get_type(arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case 'u':
+                        arg = parseInt(arg, 10) >>> 0
+                    break
+                    case 'v':
+                        arg = arg.valueOf()
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case 'x':
+                        arg = parseInt(arg, 10).toString(16)
+                    break
+                    case 'X':
+                        arg = parseInt(arg, 10).toString(16).toUpperCase()
+                    break
+                }
+                if (re.json.test(match[8])) {
+                    output[output.length] = arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? '+' : '-'
+                        arg = arg.toString().replace(re.sign, '')
+                    }
+                    else {
+                        sign = ''
+                    }
+                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : '') : ''
+                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output.join('')
+    }
+
+    sprintf.cache = {}
+
+    sprintf.parse = function(fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = match[0]
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = '%'
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list[field_list.length] = field_match[1]
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else {
+                                throw new SyntaxError("[sprintf] failed to parse named argument key")
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError("[sprintf] failed to parse named argument key")
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
+                }
+                parse_tree[parse_tree.length] = match
+            }
+            else {
+                throw new SyntaxError("[sprintf] unexpected placeholder")
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return parse_tree
+    }
+
+    var vsprintf = function(fmt, argv, _argv) {
+        _argv = (argv || []).slice(0)
+        _argv.splice(0, 0, fmt)
+        return sprintf.apply(null, _argv)
+    }
+
+    /**
+     * helpers
+     */
+    function get_type(variable) {
+        if (typeof variable === 'number') {
+            return 'number'
+        }
+        else if (typeof variable === 'string') {
+            return 'string'
+        }
+        else {
+            return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
+        }
+    }
+
+    var preformattedPadding = {
+        '0': ['', '0', '00', '000', '0000', '00000', '000000', '0000000'],
+        ' ': ['', ' ', '  ', '   ', '    ', '     ', '      ', '       '],
+        '_': ['', '_', '__', '___', '____', '_____', '______', '_______'],
+    }
+    function str_repeat(input, multiplier) {
+        if (multiplier >= 0 && multiplier <= 7 && preformattedPadding[input]) {
+            return preformattedPadding[input][multiplier]
+        }
+        return Array(multiplier + 1).join(input)
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    if (typeof exports !== 'undefined') {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
+    }
+    else {
+        window.sprintf = sprintf
+        window.vsprintf = vsprintf
+
+        if (typeof define === 'function' && define.amd) {
+            define(function() {
+                return {
+                    sprintf: sprintf,
+                    vsprintf: vsprintf
+                }
+            })
+        }
+    }
+})(typeof window === 'undefined' ? this : window);

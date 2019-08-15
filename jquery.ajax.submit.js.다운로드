@@ -1,0 +1,372 @@
+ajaxSubmit = function(options) {
+
+		var default_option= {
+			onSuccess: null,
+			onFail: null,
+			onBeforeSend: null,
+			form: null,
+			url: null,
+			method: 'post',
+			msgConfirm: null,
+			doSerialize:true,
+			data: null,
+			skipValidate: false,
+			validateRules:{},
+			validateMessages:{},
+			showLoading:true
+		};
+
+		var opt = $.extend({}, default_option, options || {});
+
+		if(opt.form) opt.form = $(opt.form);
+
+		if(!opt.url && opt.form && opt.form.length>0) opt.url = opt.form.attr('action');
+		if(!opt.url) {alert('ajaxSubmit option url is not found.'); return;}
+
+		var _validateRules = {};
+		var _validateMessages = {};
+		var addValidateRule = function($el) {
+
+			var rules = $el.data('validate');
+			if(!rules) return;
+
+			var name = $el.attr('name') || $el.attr('id');
+			if(!name || name.length<1) return;
+
+			if(!_validateRules[name]) {
+				_validateRules[name] = {};
+				_validateMessages[name] = {};
+			}
+
+			var rulesArray = rules.split('\|');
+			for(var i=0; i<rulesArray.length; i++) {
+				var ruleArray = rulesArray[i].split('=');
+				if(ruleArray.length==0 || ruleArray[0].length<1) continue;
+				var ruleName = ruleArray[0].trim();
+
+				/*	// defualt message
+				 	required: "This field is required.",
+					remote: "Please fix this field.",
+					email: "Please enter a valid email address.",
+					url: "Please enter a valid URL.",
+					date: "Please enter a valid date.",
+					dateISO: "Please enter a valid date ( ISO ).",
+					number: "Please enter a valid number.",
+					digits: "Please enter only digits.",
+					creditcard: "Please enter a valid credit card number.",
+					equalTo: "Please enter the same value again.",
+					maxlength: $.validator.format( "Please enter no more than {0} characters." ),
+					minlength: $.validator.format( "Please enter at least {0} characters." ),
+					rangelength: $.validator.format( "Please enter a value between {0} and {1} characters long." ),
+					range: $.validator.format( "Please enter a value between {0} and {1}." ),
+					max: $.validator.format( "Please enter a value less than or equal to {0}." ),
+					min: $.validator.format( "Please enter a value greater than or equal to {0}." )
+				 */
+				if(ruleName == 'required') {	/////////// ex : data-validate='required'
+					_validateRules[name]['required'] = true;
+					_validateMessages[name]['required'] = "필수 항목 입니다.";
+				} else if(ruleName == 'email') {	/////////// ex : data-validate='email'
+					_validateRules[name]['email'] = true;
+					_validateMessages[name]['email'] = "올바른 이메일 주소를 입력하세요.";
+				} else if(ruleName == 'minlength') {	/////////// ex : data-validate='minlength=5'
+					var len = parseInt(ruleArray[1].trim());
+					if(len && typeof len == 'number') {
+						_validateRules[name]['minlength'] = len;
+						_validateMessages[name]['minlength'] ="최소 {0} 글자를 입력하세요.";
+					}
+				} else if(ruleName == 'maxlength') {	/////////// ex : data-validate='maxlength=128'
+					var len = parseInt(ruleArray[1].trim());
+					if(len && typeof len == 'number') {
+						_validateRules[name]['maxlength'] = len;
+						_validateMessages[name]['maxlength'] ="최대 {0} 글자를 입력하세요.";
+					}
+				} else if(ruleName == 'rangelength') {	/////////// ex : data-validate='rangelength=5,10'
+					var str = ruleArray[1].trim();
+					if(str && str.length>=3) {
+						var tmp = str.split(',');
+						if(!tmp || tmp.length!=2 || tmp[0].length<1 || tmp[1].length<1) continue;
+						var num1 = parseInt(tmp[0].trim());
+						var num2 = parseInt(tmp[1].trim());
+						if(num1 && typeof num1 == 'number' && num2 && typeof num2 == 'number') {
+							_validateRules[name]['rangelength'] = [num1, num2];
+							_validateMessages[name]['rangelength'] ="{0}에서 {1} 글자를 입력하세요.";
+						}
+					}
+				} else if(ruleName == 'min') {	/////////// ex : data-validate='min=5'
+					var len = parseInt(ruleArray[1].trim());
+					if(len && typeof len == 'number') {
+						_validateRules[name]['min'] = len;
+						_validateMessages[name]['min'] =" {0}보다 작은 값을 입력하세요.";
+					}
+				} else if(ruleName == 'max') {	/////////// ex : data-validate='max=128'
+					var len = parseInt(ruleArray[1].trim());
+					if(len && typeof len == 'number') {
+						_validateRules[name]['max'] = len;
+						_validateMessages[name]['max'] =" {0}보다 큰 값을 입력하세요.";
+					}
+				} else if(ruleName == 'range') {	/////////// ex : data-validate='range=5,10'
+					var str = ruleArray[1].trim();
+					if(str && str.length>=3) {
+						var tmp = str.split(',');
+						if(!tmp || tmp.length!=2 || tmp[0].length<1 || tmp[1].length<1) continue;
+						var num1 = parseInt(tmp[0].trim());
+						var num2 = parseInt(tmp[1].trim());
+						if(num1 && typeof num1 == 'number' && num2 && typeof num2 == 'number') {
+							_validateRules[name]['range'] = [num1, num2];
+							_validateMessages[name]['range'] ="{0}부터 {1}사이의 값을 입력하세요.";
+						}
+					}
+				} else if(ruleName == 'equalto') {	/////////// ex : data-validate='equalto=#password'
+					var str = ruleArray[1].trim();
+					if(str && str.length>0) {
+						var hold = $(str).data('label') || $(str).data('name') || $(str).attr('placeholder') || $(str).attr('name') || $(str).attr('id');
+						_validateRules[name]['equalTo'] = str;
+						_validateMessages[name]['equalTo'] ="{0}와 동일한 값을 입력하세요.".format(hold);
+					}
+				} else if(ruleName == 'url') {		/////////// ex : data-validate='url'
+					_validateRules[name]['url'] = true;
+					_validateMessages[name]['url'] = "올바른 URL을 입력하세요.";
+				} else if(ruleName == 'remote') {	/////////// ex : data-validate='remote=check.php'
+					var str = ruleArray[1].trim();
+					if(str && str.length>0) {
+						_validateRules[name]['remote'] = str;
+						// "check.php?엘리먼트명=값" 으로 호출
+						// 서버의 check.php 는 값이 맞다면
+						// true 를 print, 그외 문자열은 invalid 하고 해당 문자열을 오류메세지로 간주
+					}
+				} else if(ruleName == 'date') {		/////////// ex : data-validate='date'
+					_validateRules[name]['date'] = true;
+					_validateMessages[name]['date'] = "올바른 날짜 형식으로 입력하세요.";
+				} else if(ruleName == 'dateISO') {		/////////// ex : data-validate='dateISO'
+					_validateRules[name]['dateISO'] = true;
+					_validateMessages[name]['dateISO'] = "올바른 ISO형식의 날짜로 입력하세요.";
+				} else if(ruleName == 'number') {		/////////// ex : data-validate='number'
+					_validateRules[name]['number'] = true;
+					_validateMessages[name]['number'] = "숫자만 입력하세요.";	// +,-,. 가능
+				} else if(ruleName == 'digits') {		/////////// ex : data-validate='digits'
+					_validateRules[name]['digits'] = true;
+					_validateMessages[name]['digits'] = "자연수만 입력하세요.";
+
+				// 여기서 부터는 additional-method.js
+				} else if(ruleName == 'require_from_group') {	/////////// ex : data-validate='require_from_group=2,.group-name,전화번호 중 2가지 이상 입력하세요.'
+					var str = ruleArray[1].trim();		// http://jqueryvalidation.org/require_from_group-method 참고
+					if(str && str.length>=3) {
+						var tmp = str.split(',');
+						if(!tmp || tmp.length<2 || tmp[0].length<1 || tmp[1].length<1) continue;
+						var num = parseInt(tmp[0].trim());
+						var group = tmp[1].trim();
+						var msg = tmp.length>2 ? tmp[3].trim() : '';
+
+						if(num && typeof num == 'number' && group && group.length>0) {
+							_validateRules[name]['require_from_group'] = [num, group];
+							_validateMessages[name]['require_from_group'] = (msg && msg.length>0) ? msg : "최소 {0}개의 항목에 입력하세요.".format(num);	// Please fill at least {0} of these fields.
+						}
+					}
+				} else if(ruleName == 'integer') {		/////////// ex : data-validate='integer'
+					_validateRules[name]['integer'] = true;
+					_validateMessages[name]['integer'] = "정수만 입력하세요."	// A positive or negative non-decimal number please
+				} else if(ruleName == 'ipv4') {		/////////// ex : data-validate='ipv4'
+					_validateRules[name]['ipv4'] = true;
+					_validateMessages[name]['ipv4'] = " 올바른 IP주소를 입력하세요."	// Please enter a valid IP v4 address.
+				} else if(ruleName == 'ipv6') {		/////////// ex : data-validate='ipv6'
+					_validateRules[name]['ipv6'] = true;
+					_validateMessages[name]['ipv6'] = " 올바른 IP주소(IPv6)를 입력하세요."	// Please enter a valid IP v6 address.
+				} else if(ruleName == 'lettersonly') {		/////////// ex : data-validate='lettersonly'
+					_validateRules[name]['lettersonly'] = true;
+					_validateMessages[name]['lettersonly'] = " 영문 알파벳만 입력하세요."	// Letters only please.
+				} else if(ruleName == 'nowhitespace') {		/////////// ex : data-validate='nowhitespace'
+					_validateRules[name]['nowhitespace'] = true;
+					_validateMessages[name]['nowhitespace'] = " 공백없이 입력하세요."	// No white space please.
+				} else if(ruleName == 'time') {		/////////// ex : data-validate='time'
+					_validateRules[name]['time'] = true;
+					_validateMessages[name]['time'] = " 00:00에서 23:59까지의 시간을 입력하세요."	// Please enter a valid time, between 00:00 and 23:59
+				} else if(ruleName == 'time12h') {		/////////// ex : data-validate='time12h'
+					_validateRules[name]['time12h'] = true;
+					_validateMessages[name]['time12h'] = " hh:mm am/pm 형식의 12시간제로 입력하세요."	// Please enter a valid time in 12-hour am/pm format
+				} else if(ruleName == 'url2') {		/////////// ex : data-validate='time12h'  (same as url, but TLD is optional)
+					_validateRules[name]['url2'] = true;
+					_validateMessages[name]['url2'] = "올바른 URL을 입력하세요."	// Please enter a valid time in 12-hour am/pm format
+				}
+			}
+		}
+		if(opt.form)
+		opt.form.find('input,textarea').each(function() {addValidateRule($(this)); });
+		opt.validateRules = $.extend({}, _validateRules, opt.validateRules || {});
+		opt.validateMessages = $.extend({}, _validateMessages, opt.validateMessages || {});
+
+		if(!opt.form || opt.skipValidate) {
+			if(opt.msgConfirm) {
+				bootbox.confirm(opt.msgConfirm, function (result) {
+					result && ajaxSubmitReal(opt);
+				});
+			} else {
+				ajaxSubmitReal(opt);
+			}
+			return;
+		}
+
+		// Form validation check
+		var validator = opt.form.validate({
+			errorElement: 'div',
+			errorClass: 'form-validator-error',
+			focusInvalid: true,
+			rules: opt.validateRules,
+			messages: opt.validateMessages,
+			onsubmit: false,
+
+			highlight: function (e) {
+				$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+			},
+
+			success: function (e) {
+				$(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+				$(e).remove();
+			},
+
+			errorPlacement: function (error, element) {
+				element.closest('.controls').append( error );
+				/*
+				if(element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+					var controls = element.closest('div[class*="col-"]');
+					if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
+					else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+				}
+				else if(element.is('.select2')) {
+					error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+				}
+				else if(element.is('.chosen-select')) {
+					error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+				}
+				else error.insertAfter(element.parent());
+				*/
+			},
+
+			submitHandler: function (form) {
+				if(console && console.log) console.log('ajaxSubmit.submitHandler');
+				return false;	/*
+				if(opt.msgConfirm) {
+					bootbox.confirm(opt.msgConfirm, function (result) {
+						result && ajaxSubmitReal(opt);
+					});
+				} else {
+					ajaxSubmitReal(opt);
+				}
+				return false;
+				*/
+			},
+			invalidHandler: function (form) {
+				if(console && console.log) console.log('ajaxSubmit.invalidHandler');
+			}
+		});
+
+		if(validator.form()) {
+			validator.resetForm();
+			if(opt.msgConfirm) {
+				bootbox.confirm(opt.msgConfirm, function (result) {
+					result && ajaxSubmitReal(opt);
+				});
+			} else {
+				ajaxSubmitReal(opt);
+			}
+		}
+};
+
+ajaxSubmitReal = function(opt) {
+	var data = "";
+
+	if(opt.showLoading) $.fn.openLoadingOverlay();
+
+	if(opt.doSerialize && opt.form) {
+		data = opt.form.serialize();
+	}
+
+	if(opt.data) {
+		if(typeof opt.data == 'string') data += (data.length>0 ? '&':'') + opt.data;
+		else if(typeof opt.data == 'object') {
+			$.each( opt.data, function( key, value ) {
+				data += (data.length>0 ? '&':'') + urlencode(key) + '=' + urlencode(value);
+			});
+		}
+	}
+	var url = opt.url;
+	url += (url.indexOf('?') < 0) ? '?':'&';
+	url += '_='+jQuery.now();
+
+	$.ajax({
+		url: url,
+		data: data,
+		type: opt.type || 'POST',
+		cache: false,
+		beforeSend: function(jqXHR, settings) {
+			return opt.onBeforeSend ? opt.onBeforeSend():true;
+		},
+		error:function(xhr){
+			var msg = "";
+			msg += 'Error while submit the data<BR>';
+			if(xhr && xhr.status) msg += 'Status: ' + xhr.status + '<BR>';
+			if(xhr && xhr.statusText && xhr.statusText.length>0) msg += 'Status text: ' + xhr.statusText + '<BR>';
+			if(xhr && xhr.responseText && xhr.responseText.length>0) msg += 'Responsed:<BR>' + xhr.responseText + '<BR>';
+
+			if(console && console.log) console.log( "ajaxSubmit error! " + (xhr.status||"") + " " + (xhr.statusText||"") );
+			if(opt.showLoading) $.fn.closeLoadingOverlay();
+
+			ajaxSubmitShowError(msg, opt);
+		}
+	}).done(function(data) {
+		if(console && console.log) console.log( "ajaxSubmit done!" );
+		if(opt.showLoading) $.fn.closeLoadingOverlay();
+
+		try {
+			var json = typeof data == 'string' ? $.parseJSON(data) : data;
+			if(typeof json == 'undefiend' || !json) {	// error
+				if(opt.onFail) opt.onFail(data);
+				ajaxSubmitShowError(data, opt);
+				return;
+			}
+			if(!json.success) {
+				if(opt.onFail && !opt.onFail(json)) return;
+				ajaxSubmitShowError(json, opt);
+				return;
+			}
+
+			if(opt.onSuccess && !opt.onSuccess(json)) return;
+
+			ajaxSubmitShowError(json, opt);
+		} catch(e) {
+			ajaxSubmitShowError(e+'<BR>Exception while processing the result : <BR>' + htmlencode(data), opt);
+		}
+	});
+}
+
+ajaxSubmitShowError = function(json, opt) {
+
+	if(typeof json == 'undefined') {
+		toastr.error('undefined result data', "gritter-error");
+		return;
+	}
+	if(json == null) {
+	
+		
+		toastr.error('Result data is null', "gritter-error");
+		return;
+
+
+	}
+	if(typeof json == 'string') {
+		toastr.error(json, "gritter-error");
+		return;
+	}
+
+
+	if(json.alertMsg && json.alertMsg.length>0) {
+		var dlg = {'class_name': json.success ? 'gritter-success':'gritter-error', 'text':json.alertMsg};
+		if(json.alertTitle && json.alertTitle.length>0) dlg.title = json.alertTitle;
+		//$.gritter.add(dlg);
+		toastr.error(json.alertMsg, json.alertTitle);
+
+	}
+};
+
+isPopup = function() {
+	return $('body').hasClass('isPopup-true');
+}

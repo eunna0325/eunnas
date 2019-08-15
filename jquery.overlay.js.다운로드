@@ -1,0 +1,90 @@
+$(function(e) {
+    $.fn.openOverlay = function(olEl, options) {
+        var defaults = {
+            closeOnClickShade:true,     // 뿌연부분 클릭시 오버레이 해제할지 여부
+            onShow: null    // shade 표시 후 실행할 함수
+        };
+        var opt = $.extend( {}, defaults, options );
+        var $oLay = !olEl? null:$(olEl);
+
+        if ($('#overlay-shade').length == 0)
+            $('body').prepend('<div id="overlay-shade"></div>');
+
+        if(opt.closeOnClickShade) {
+            $('#overlay-shade').on('click', function(e) {
+                $.fn.closeOverlay(olEl, options);
+            });
+        }
+
+        $('#overlay-shade').fadeTo(300, 0.4, function() {
+            if(!$oLay || $oLay.length==0) return;
+            var props = {
+                oLayWidth       : $oLay.width(),
+                scrTop          : $(window).scrollTop(),
+                viewPortWidth   : $(window).width()
+            };
+
+            var leftPos = (props.viewPortWidth - props.oLayWidth) / 2;
+
+            $oLay.css({
+                    display : 'block',
+                    opacity : 0,
+                    top : '-=300',
+                    left : leftPos+'px'
+                })
+                .animate({
+                    top : props.scrTop + 40,
+                    opacity : 1
+                },
+                600, "swing", function() {
+                    if(opt.onShow) opt.onShow(olEl, opt);
+                });
+        });
+
+        if(!$oLay || $oLay.length==0) {
+            if(opt.onShow) opt.onShow(olEl, opt);
+        }
+    };
+
+    $.fn.closeOverlay = function(olEl, options) {
+        var $oLay = $(olEl);
+        $oLay.animate({
+            top : '-=300',
+            opacity : 0
+        }, 400, function() {
+            $('#overlay-shade').fadeOut(300);
+            $(this).css('display','none');
+        });
+    };
+
+   	$.fn.openLoadingOverlay = function(option) {
+		var opt = option||{}
+        $('#overlay-loading').remove();
+
+        var $loading = $('<div />', {
+        	'id':'overlay-loading'
+        }).append(
+        	$('<div />', {
+        		'id':'overlay-loading-icon',
+        		'class':'center'
+        	}).append( $('<i />', {
+        			'class':'ace-icon fa fa-spinner fa-spin orange bigger-250 icon-spinner icon-spin'
+        		})
+        	).append( $('<span />', {}).text(opt.label || '전송중...') )
+        ).appendTo($('body')).hide();
+
+        $.fn.openOverlay(null, {closeOnClickShade:false, onShow:function() {
+            var leftPos = ($(window).width() - $loading.width()) / 2;
+            var topPos = ($(window).scrollTop() + $(window).height() - $loading.height()) / 2;
+
+            $loading.css({
+				top : topPos + 'px',
+                left : leftPos+'px'
+            }).fadeIn();
+        }});
+   	};
+
+   	$.fn.closeLoadingOverlay = function() {
+   		$.fn.closeOverlay($('#overlay-loading'));
+   	};
+});
